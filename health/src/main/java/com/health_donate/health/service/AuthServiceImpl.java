@@ -8,15 +8,12 @@ import com.health_donate.health.dto.RegisterRequest;
 import com.health_donate.health.entity.User;
 import com.health_donate.health.repository.RoleRepository;
 import com.health_donate.health.repository.UserRepository;
-import com.health_donate.health.security.JwtUtils;
+import com.health_donate.health.security.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.management.relation.Role;
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -37,20 +34,20 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = new User();
-        user.setUsername(request.getUsername());
+        user.setUserName(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         com.health_donate.health.entity.Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Role not found"));
-        user.setRoles(Collections.singleton(userRole));
+     //   user.setRoles(Collections.singleton(userRole));
 
         userRepository.save(user);
 
-        String token = jwtUtils.generateToken(user.getUsername());
+        String token = jwtUtils.generateToken(user.getUserName());
         return new LoginResponse(
                 token,
-                user.getUsername(),
+                user.getUserName(),
                 user.getEmail(),
                 userRole.getName()
         );
@@ -62,17 +59,17 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        User user = userRepository.findByUsername(request.getUsername())
+        User user = (User) userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String token = jwtUtils.generateToken(user.getUsername());
-        String role = user.getRoles().stream().findFirst().map(Role::getName).orElse("ROLE_USER");
+        String token = jwtUtils.generateToken(user.getUserName());
+       // String role = user.getRoles().stream().findFirst().map(Role::getName).orElse("ROLE_USER");
 
         return new LoginResponse(
                 token,
-                user.getUsername(),
+                user.getUserName(),
                 user.getEmail(),
-                role
+               "role" //role
         );
     }
 

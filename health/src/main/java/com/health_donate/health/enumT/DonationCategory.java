@@ -1,5 +1,5 @@
 package com.health_donate.health.enumT;
 
-public enum DonationType {
+public enum DonationCategory {
     MEDICINE, EQUIPMENT
 }
