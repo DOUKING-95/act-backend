@@ -8,11 +8,15 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entite pour pour enregister les notifications sur DoNup
+ * */
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "notifications")
 public class Notification {
 
     @Id
@@ -24,7 +28,7 @@ public class Notification {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Relations
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

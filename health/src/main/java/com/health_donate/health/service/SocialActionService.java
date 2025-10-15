@@ -6,15 +6,17 @@ import com.health_donate.health.dto.SocialActionDTO;
 import com.health_donate.health.entity.SocialAction;
 import com.health_donate.health.mapper.SocialActionMapper;
 import com.health_donate.health.repository.SocialActionRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class SocialActionService {
 
-    @Autowired
+
     private SocialActionRepository socialActionRepository;
 
     // CREATE

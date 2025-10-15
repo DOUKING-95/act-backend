@@ -1,20 +1,20 @@
 package com.health_donate.health.service;
 
-package com.health_donate.health.service;
 
 import com.health_donate.health.dto.AuditLogDTO;
 import com.health_donate.health.entity.AuditLog;
 import com.health_donate.health.mapper.AuditLogMapper;
 import com.health_donate.health.repository.AuditLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AuditLogService {
 
-    @Autowired
+
     private AuditLogRepository auditLogRepository;
 
     // CREATE

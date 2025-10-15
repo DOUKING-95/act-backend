@@ -6,15 +6,17 @@ import com.health_donate.health.dto.OngDTO;
 import com.health_donate.health.entity.Ong;
 import com.health_donate.health.mapper.OngMapper;
 import com.health_donate.health.repository.OngRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class OngService {
 
-    @Autowired
+
     private OngRepository ongRepository;
 
     // CREATE

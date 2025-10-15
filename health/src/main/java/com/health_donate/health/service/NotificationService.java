@@ -1,20 +1,21 @@
 package com.health_donate.health.service;
 
-package com.health_donate.health.service;
 
 import com.health_donate.health.dto.NotificationDTO;
 import com.health_donate.health.entity.Notification;
 import com.health_donate.health.mapper.NotificationMapper;
 import com.health_donate.health.repository.NotificationRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class NotificationService {
 
-    @Autowired
+
     private NotificationRepository notificationRepository;
 
     // CREATE

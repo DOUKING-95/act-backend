@@ -6,51 +6,87 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
+
+/**
+ * Entite pour de base pour mes utilisateur
+ * */
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    private boolean isActif = false;
     private String phoneNumber;
-    private String address;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
-
     private boolean verified;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    // Relations
-    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL)
-    private List<Donation> donations;
-
-    @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
-    private List<DonationRequest> donationRequests;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> notifications;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private List<Message> sentMessages;
+    @PrePersist
+    protected void onCreate(){
+        this.createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    private List<Message> receivedMessages;
+    }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+    }
 
+    @Override
+    public String getPassword() { return password; }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return isActif;    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return isActif;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return  isActif;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return  isActif;
+    }
 }
 

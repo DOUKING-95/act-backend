@@ -1,7 +1,7 @@
 package com.health_donate.health.entity;
 
+import com.health_donate.health.enumT.DonationCategory;
 import com.health_donate.health.enumT.DonationStatus;
-import com.health_donate.health.enumT.DonationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +12,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
+/**
+ * Entite pour pour enregister les dons sur DoNup
+ * */
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "donations")
 public class Donation {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,26 +31,28 @@ public class Donation {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private DonationType type;
+    private DonationCategory type;
 
     private int quantity;
     private LocalDate expiryDate;
 
     @Enumerated(EnumType.STRING)
-    private DonationStatus status;
+    private DonationStatus isAvailable;
 
     private String location;
     private boolean urgent;
-    private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Relations
+    private  boolean published;
+    private LocalDateTime createdAt ;
+
+
     @ManyToOne
     @JoinColumn(name = "donor_id")
-    private User donor;
+    private Actor donor;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+   /** @ManyToOne
+    @JoinColumn(name = "category_id")*/
+    private String category;
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL)
     private List<DonationRequest> requests;
@@ -55,5 +62,11 @@ public class Donation {
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL)
     private List<Review> reviews;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+
+    }
 }
 

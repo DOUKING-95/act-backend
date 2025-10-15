@@ -5,7 +5,6 @@ import com.health_donate.health.dto.ParticipationDTO;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.Participation;
 import com.health_donate.health.entity.SocialAction;
-import com.health_donate.health.entity.User;
 
 import com.health_donate.health.mapper.ParticipationMapper;
 import com.health_donate.health.repository.ActorRepository;

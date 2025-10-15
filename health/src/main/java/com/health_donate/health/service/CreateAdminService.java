@@ -1,12 +1,6 @@
 package com.health_donate.health.service;
 
 
-
-
-
-
-
-
 import com.health_donate.health.entity.Role;
 import com.health_donate.health.entity.User;
 import com.health_donate.health.enumT.UserRole;
@@ -50,7 +44,7 @@ public class CreateAdminService implements CommandLineRunner {
                 });
             }
 
-            Role role = roleRepo.findByName(UserRole.ADMIN_ROLE.name())
+            Role role = roleRepo.findByName(UserRole.ADMIN_ROLE)
                     .orElseThrow(() -> new RuntimeException("Role ADMIN introuvable !"));
             admin.setRole(role);
 

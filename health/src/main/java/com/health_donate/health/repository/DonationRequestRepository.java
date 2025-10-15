@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface DonationRequestRepository extends JpaRepository<DonationRequest, Long> {
-    List<DonationRequest> findByRequesterId(Long requesterId);
+
     List<DonationRequest> findByDonationId(Long donationId);
 }

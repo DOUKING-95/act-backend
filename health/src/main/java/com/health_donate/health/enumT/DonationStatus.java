@@ -1,5 +1,7 @@
 package com.health_donate.health.enumT;
 
 public enum DonationStatus {
-    PENDING, ACCEPTED, EXPIRED, CANCELLED
+
+
+    AVAILABLE, UNAVAILABLE
 }

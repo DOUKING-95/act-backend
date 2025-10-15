@@ -1,6 +1,5 @@
 package com.health_donate.health.service.external;
 
-package com.parrainer_plus.p_plus.service.external;
 
 
 import lombok.AllArgsConstructor;

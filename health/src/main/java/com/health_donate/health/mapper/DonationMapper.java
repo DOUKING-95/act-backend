@@ -18,14 +18,14 @@ public class DonationMapper {
         dto.setType(donation.getType());
         dto.setQuantity(donation.getQuantity());
         dto.setExpiryDate(donation.getExpiryDate());
-        dto.setStatus(donation.getStatus());
+        dto.setIsAvailable(donation.getIsAvailable());
         dto.setLocation(donation.getLocation());
         dto.setUrgent(donation.isUrgent());
         dto.setPublished(donation.isPublished());
         dto.setCreatedAt(donation.getCreatedAt());
 
         dto.setDonorId(donation.getDonor() != null ? donation.getDonor().getId() : null);
-        dto.setCategoryId(donation.getCategory() != null ? donation.getCategory().getId() : null);
+        dto.setCategory(donation.getCategory() != null ? donation.getCategory() : null);
 
         if (donation.getRequests() != null) {
             dto.setRequestIds(
@@ -54,7 +54,7 @@ public class DonationMapper {
         return dto;
     }
 
-    public static Donation toEntity(DonationDTO dto, User donor, Category category) {
+    public static Donation toEntity(DonationDTO dto, Actor actor) {
         if (dto == null) return null;
 
         Donation donation = new Donation();
@@ -64,13 +64,13 @@ public class DonationMapper {
         donation.setType(dto.getType());
         donation.setQuantity(dto.getQuantity());
         donation.setExpiryDate(dto.getExpiryDate());
-        donation.setStatus(dto.getStatus());
+        donation.setIsAvailable(dto.getIsAvailable());
         donation.setLocation(dto.getLocation());
         donation.setUrgent(dto.isUrgent());
         donation.setPublished(dto.isPublished());
         donation.setCreatedAt(dto.getCreatedAt());
-        donation.setDonor(donor);
-        donation.setCategory(category);
+        donation.setDonor(actor);
+        donation.setCategory(dto.getCategory());
 
         return donation;
     }

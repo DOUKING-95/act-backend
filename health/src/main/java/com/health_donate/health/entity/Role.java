@@ -2,11 +2,16 @@ package com.health_donate.health.entity;
 
 
 
+import com.health_donate.health.enumT.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
 
+
+
+/**
+ * Entite pour de base pour representer mes roles
+ * */
 @Entity
 @Table(name = "roles")
 @Getter
@@ -20,9 +25,9 @@ public class Role {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // Exemple : ROLE_USER, ROLE_ADMIN
+    @Enumerated(EnumType.STRING)
+    private UserRole name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+
 }
 

@@ -1,7 +1,6 @@
 package com.health_donate.health.controller;
 
 import com.health_donate.health.dto.ApiResponse;
-import com.health_donate.health.service.UserService;
 import com.health_donate.health.service.ValidationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("auth")
 @AllArgsConstructor
 public class ValidationController {
 

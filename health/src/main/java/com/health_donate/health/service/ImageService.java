@@ -1,20 +1,22 @@
 package com.health_donate.health.service;
 
-package com.health_donate.health.service;
+
 
 import com.health_donate.health.dto.ImageDTO;
 import com.health_donate.health.entity.Image;
 import com.health_donate.health.mapper.ImageMapper;
 import com.health_donate.health.repository.ImageRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ImageService {
 
-    @Autowired
+
     private ImageRepository imageRepository;
 
     // CREATE

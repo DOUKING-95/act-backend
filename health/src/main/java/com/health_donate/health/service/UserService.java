@@ -2,14 +2,19 @@ package com.health_donate.health.service;
 
 import com.health_donate.health.entity.User;
 import com.health_donate.health.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UserService {
-    @Autowired
+@AllArgsConstructor
+public class UserService implements UserDetailsService {
+
     private UserRepository userRepository;
 
     public User save(User user) {
@@ -18,5 +23,13 @@ public class UserService {
 
     public Optional<User> getById(Long id) {
         return userRepository.findById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
+        User user = userRepository.findByPhoneNumber(phone)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+        return new org.springframework.security.core.userdetails.User(user.getPhoneNumber(), user.getPassword(), user.getAuthorities());
+
     }
 }

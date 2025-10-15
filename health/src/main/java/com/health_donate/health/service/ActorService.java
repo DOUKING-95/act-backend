@@ -1,26 +1,63 @@
 package com.health_donate.health.service;
 
-package com.health_donate.health.service;
+
 
 import com.health_donate.health.dto.ActorDTO;
+import com.health_donate.health.dto.RegisterDTO;
 import com.health_donate.health.entity.Actor;
+import com.health_donate.health.entity.Role;
+import com.health_donate.health.entity.User;
 import com.health_donate.health.mapper.ActorMapper;
 import com.health_donate.health.repository.ActorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.health_donate.health.repository.RoleRepository;
+import com.health_donate.health.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ActorService {
 
-    @Autowired
+
     private ActorRepository actorRepository;
+    private UserRepository userRepository;
+    private BCryptPasswordEncoder passwordEncoder;
+    private  ValidationService validationService;
+    private RoleRepository roleRepository;
+
 
     // --- CREATE ---
-    public ActorDTO createActor(ActorDTO dto) {
-        Actor actor = ActorMapper.toEntity(dto);
+    public ActorDTO createActor(RegisterDTO dto)  {
+
+        Role role =  this.roleRepository.findById(1L).orElseThrow(()-> new EntityNotFoundException("Pas de role pour id :) 1"));
+
+       Optional<User> user = this.userRepository.findByPhoneNumber(dto.phone());
+
+       if (user.isPresent()){
+           throw  new RuntimeException("Ce numéro est déjà réconnu par le systeme Act ! Merci de renseignez un autre numéro .");
+       }
+
+
+        Actor actor = RegisterDTO.toEntity(dto);
+
+        if (!Objects.equals(actor.getPassword(), dto.confirmPassword())){
+            throw  new IllegalArgumentException("Veillez confirmer le mot de pass");
+
+        }
+
+
+
+        actor.setPassword(passwordEncoder.encode(dto.password()));
+        actor.setRole(role);
+
         Actor savedActor = actorRepository.save(actor);
+
+        this.validationService.saveValidation(actor);
         return ActorMapper.toDTO(savedActor);
     }
 
