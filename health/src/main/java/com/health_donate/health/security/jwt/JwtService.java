@@ -18,21 +18,36 @@ import java.util.function.Function;
 public class JwtService {
 
     private final String secretKey;
-    private final long jwtExpiration; // en millisecondes
+    private final long jwtExpiration;
+    private final long refreshExpiration;
+    // en millisecondes
 
     public JwtService(
             @Value("${security.jwt.secret-key}") String secretKey,
-            @Value("${security.jwt.expiration-time}") long jwtExpiration) {
+            @Value("${security.jwt.expiration-time}") long jwtExpiration,
+    @Value("${security.jwt.refresh-token-expiration-ms}") long refreshExpiration){
         this.secretKey = secretKey;
         this.jwtExpiration = jwtExpiration;
+        this.refreshExpiration = refreshExpiration;
     }
 
-    // Générer un token simple avec UserDetails
+
+    public String generateRefreshToken(UserDetails userDetails) {
+
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+
+
     public String generateToken(UserDetails userDetails) {
         return generateToken(Map.of("roles", userDetails.getAuthorities()), userDetails);
     }
 
-    // Générer un token avec des claims supplémentaires
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(extraClaims)

@@ -5,11 +5,13 @@ import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.LoginDTO;
 import com.health_donate.health.dto.RegisterDTO;
 import com.health_donate.health.entity.Actor;
+import com.health_donate.health.entity.RefreshToken;
 import com.health_donate.health.entity.User;
 import com.health_donate.health.repository.RoleRepository;
 import com.health_donate.health.repository.UserRepository;
 import com.health_donate.health.security.jwt.JwtService;
 import com.health_donate.health.service.ActorService;
+import com.health_donate.health.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,64 +33,65 @@ import java.util.Map;
     public class AuthController {
 
 
-        private AuthenticationManager authenticationManager;
-        private RoleRepository roleRepository;
-        private ActorService actorService;
-        private UserRepository userRepository;
-        private JwtService jwtService;
-        private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
+    private final ActorService actorService;
 
+    // LOGIN
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginDTO request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getPhone(),
+                        request.getPassword()
+                )
+        );
 
-        @PostMapping("/register")
-        public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterDTO request) {
-            if (userRepository.findByPhoneNumber(request.phone()).isPresent()) {
-                throw new RuntimeException("Ce numéro est déjà réconnu par le systeme Act ! Merci de renseignez un autre numéro .");
-            }
+        Actor user = (Actor) userRepository.findByPhoneNumber(request.getPhone())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
+        String accessToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-            Actor user = new Actor();
-            user.setName(request.name());
-            user.setPhoneNumber(request.phone());
-            user.setEmail(request.email());
+        return ResponseEntity.ok(
+                new ApiResponse<>("200", "Connexion réussie", Map.of(
+                        "access_token", accessToken,
+                        "refresh_token", refreshToken.getToken()
+                ))
+        );
+    }
 
-            user.setPassword(passwordEncoder.encode(request.password()));
+    // REFRESH
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<?>> refreshToken(@RequestBody Map<String, String> request) {
+        String requestToken = request.get("refresh_token");
 
+        RefreshToken refreshToken = refreshTokenService.getByToken(requestToken)
+                .orElseThrow(() -> new RuntimeException("Refresh token invalide"));
 
-            actorService.createActor(request);
+        refreshTokenService.verifyExpiration(refreshToken);
 
-            String token = jwtService.generateToken(user);
+        Actor user = refreshToken.getUser();
+        String accessToken = jwtService.generateToken(user);
 
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-                    new ApiResponse<>(
-                            String.valueOf(HttpStatus.ACCEPTED.value()),
-                            HttpStatus.ACCEPTED.getReasonPhrase(),
-                            Map.of(token, "Inscription réussie !")));
+        return ResponseEntity.ok(new ApiResponse<>("200", "Access token renouvelé", Map.of(
+                "access_token", accessToken
+        )));
+    }
 
-        }
+    // LOGOUT
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<?>> logout(@RequestBody Map<String, String> request) {
+        String phone = request.get("phone");
+        Actor user = (Actor) userRepository.findByPhoneNumber(phone)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
+        refreshTokenService.deleteByUser(user);
 
-        @PostMapping("/login")
-        public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginDTO request) {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getPhone(),
-                            request.getPassword()
-                    )
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            User user = userRepository.findByPhoneNumber(request.getPhone())
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé par son numero"));
-
-            String token = jwtService.generateToken(user);
-
-
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-                    new ApiResponse<>(
-                            String.valueOf(HttpStatus.ACCEPTED.value()),
-                            HttpStatus.ACCEPTED.getReasonPhrase(),
-                            Map.of(token, "Connexion réussie ! !")));
-
-        }
+        return ResponseEntity.ok(new ApiResponse<>("200", "Déconnexion réussie", null));
+    }
     }
 
