@@ -22,9 +22,8 @@ public class DonationDTO {
     private Long id;
     private String title;
     private String description;
-    private DonationCategory type;
+    private DonationCategory category;
     private int quantity;
-    private LocalDate expiryDate;
     private DonationStatus isAvailable;
     private String location;
     private boolean urgent;
@@ -32,7 +31,7 @@ public class DonationDTO {
     private LocalDateTime createdAt;
 
     private Long donorId;
-    private String category;
+
 
     private List<Long> requestIds;
     private List<Long> imageIds;

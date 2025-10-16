@@ -28,6 +28,8 @@ public class Association {
 
     private String logoUrl;
 
+    private String covertUrl;
+
     private boolean isActive;
 
     private String description;

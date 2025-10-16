@@ -15,9 +15,9 @@ public class DonationMapper {
         dto.setId(donation.getId());
         dto.setTitle(donation.getTitle());
         dto.setDescription(donation.getDescription());
-        dto.setType(donation.getType());
+        dto.setCategory(donation.getCategory());
         dto.setQuantity(donation.getQuantity());
-        dto.setExpiryDate(donation.getExpiryDate());
+
         dto.setIsAvailable(donation.getIsAvailable());
         dto.setLocation(donation.getLocation());
         dto.setUrgent(donation.isUrgent());
@@ -61,16 +61,16 @@ public class DonationMapper {
         donation.setId(dto.getId());
         donation.setTitle(dto.getTitle());
         donation.setDescription(dto.getDescription());
-        donation.setType(dto.getType());
+        donation.setCategory(dto.getCategory());
         donation.setQuantity(dto.getQuantity());
-        donation.setExpiryDate(dto.getExpiryDate());
+
         donation.setIsAvailable(dto.getIsAvailable());
         donation.setLocation(dto.getLocation());
         donation.setUrgent(dto.isUrgent());
         donation.setPublished(dto.isPublished());
         donation.setCreatedAt(dto.getCreatedAt());
         donation.setDonor(actor);
-        donation.setCategory(dto.getCategory());
+
 
         return donation;
     }

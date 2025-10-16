@@ -17,6 +17,7 @@ public class AssociationMapper {
         dto.setPhone(association.getPhone());
         dto.setEmail(association.getEmail());
         dto.setLogoUrl(association.getLogoUrl());
+        dto.setCovertUrl(association.getCovertUrl());
         dto.setActive(association.isActive());
         dto.setDescription(association.getDescription());
 
@@ -33,6 +34,7 @@ public class AssociationMapper {
         association.setPhone(dto.getPhone());
         association.setEmail(dto.getEmail());
         association.setLogoUrl(dto.getLogoUrl());
+        association.setCovertUrl(dto.getCovertUrl());
         association.setActive(dto.isActive());
         association.setDescription(dto.getDescription());
 

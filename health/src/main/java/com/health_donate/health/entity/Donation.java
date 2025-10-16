@@ -31,10 +31,10 @@ public class Donation {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private DonationCategory type;
+    private DonationCategory category;
 
     private int quantity;
-    private LocalDate expiryDate;
+
 
     @Enumerated(EnumType.STRING)
     private DonationStatus isAvailable;
@@ -50,9 +50,8 @@ public class Donation {
     @JoinColumn(name = "donor_id")
     private Actor donor;
 
-   /** @ManyToOne
-    @JoinColumn(name = "category_id")*/
-    private String category;
+
+
 
     @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL)
     private List<DonationRequest> requests;

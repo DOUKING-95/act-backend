@@ -18,6 +18,7 @@ public class AssociationDTO {
     private String phone;
     private String email;
     private String logoUrl;
+    private String covertUrl;
     private boolean active;
     private String description;
 }
