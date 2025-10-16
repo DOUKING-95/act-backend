@@ -9,7 +9,9 @@ import com.health_donate.health.repository.AssociationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -18,11 +20,27 @@ public class AssociationService {
 
 
     private AssociationRepository associationRepository;
+    private final FileStorageService fileStorageService;
 
     // CREATE
-    public AssociationDTO createAssociation(AssociationDTO dto) {
+    public AssociationDTO createAssociation(AssociationDTO dto, MultipartFile logo, MultipartFile cover) throws IOException, IOException {
         Association association = AssociationMapper.toEntity(dto);
+
+
+        if (logo != null && !logo.isEmpty()) {
+            String logoPath = fileStorageService.storeFile(logo);
+            association.setLogoUrl(logoPath);
+        }
+
+
+        if (cover != null && !cover.isEmpty()) {
+            String coverPath = fileStorageService.storeFile(cover);
+            association.setCovertUrl(coverPath);
+        }
+
+
         Association saved = associationRepository.save(association);
+
         return AssociationMapper.toDTO(saved);
     }
 
