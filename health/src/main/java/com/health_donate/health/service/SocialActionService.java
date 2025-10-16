@@ -8,6 +8,7 @@ import com.health_donate.health.entity.SocialAction;
 import com.health_donate.health.mapper.SocialActionMapper;
 import com.health_donate.health.repository.ImageRepository;
 import com.health_donate.health.repository.SocialActionRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,20 +63,46 @@ public class SocialActionService {
     }
 
     // UPDATE
-    public SocialActionDTO updateSocialAction(Long id, SocialActionDTO dto) {
-        Optional<SocialAction> opt = socialActionRepository.findById(id);
-        if (opt.isEmpty()) return null;
+    public SocialActionDTO updateSocialAction(Long id, SocialActionDTO dto, MultipartFile[] images) throws IOException {
 
-        SocialAction action = opt.get();
+        SocialAction action = socialActionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("SocialAction introuvable pour l'id " + id));
+
+
         action.setTitre(dto.getTitre());
         action.setLieu(dto.getLieu());
         action.setDescription(dto.getDescription());
         action.setPassed(dto.isPassed());
         action.setBenevolNumber(dto.getBenevolNumber());
 
-        SocialAction updated = socialActionRepository.save(action);
-        return SocialActionMapper.toDTO(updated);
+
+        SocialAction updatedAction = socialActionRepository.save(action);
+
+
+        if (images != null && images.length > 0) {
+
+            List<Image> oldImages = imageRepository.findBySocialActionId(updatedAction.getId());
+            imageRepository.deleteAll(oldImages);
+
+            List<Image> savedImages = new ArrayList<>();
+            for (MultipartFile file : images) {
+                String path = fileStorageService.storeFile(file);
+
+                Image img = new Image();
+                img.setName(file.getOriginalFilename());
+                img.setUrl(path);
+                img.setSocialAction(updatedAction);
+                savedImages.add(imageRepository.save(img));
+            }
+            updatedAction.setImages(savedImages);
+        }
+
+
+        updatedAction = socialActionRepository.save(updatedAction);
+
+        return SocialActionMapper.toDTO(updatedAction);
     }
+
 
     // DELETE
     public boolean deleteSocialAction(Long id) {

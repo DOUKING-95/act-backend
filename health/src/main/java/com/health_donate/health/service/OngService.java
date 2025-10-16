@@ -6,6 +6,7 @@ import com.health_donate.health.dto.OngDTO;
 import com.health_donate.health.entity.Ong;
 import com.health_donate.health.mapper.OngMapper;
 import com.health_donate.health.repository.OngRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,22 +44,31 @@ public class OngService {
     }
 
     // UPDATE
-    public OngDTO updateOng(Long id, OngDTO dto) {
-        Optional<Ong> ongOpt = ongRepository.findById(id);
-        if (ongOpt.isEmpty()) return null;
+    public OngDTO updateOng(Long id, OngDTO dto, MultipartFile logo) throws IOException {
 
-        Ong ong = ongOpt.get();
+        Ong ong = ongRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ong introuvable pour l'id " + id));
+
+
         ong.setName(dto.getName());
         ong.setAddress(dto.getAddress());
         ong.setPhone(dto.getPhone());
         ong.setEmail(dto.getEmail());
-        ong.setLogoUrl(dto.getLogoUrl());
         ong.setActive(dto.isActive());
         ong.setDescription(dto.getDescription());
 
+
+        if (logo != null && !logo.isEmpty()) {
+            String logoPath = fileStorageService.storeFile(logo);
+            ong.setLogoUrl(logoPath);
+        }
+
+
         Ong updated = ongRepository.save(ong);
+
         return OngMapper.toDTO(updated);
     }
+
 
     // DELETE
     public boolean deleteOng(Long id) {

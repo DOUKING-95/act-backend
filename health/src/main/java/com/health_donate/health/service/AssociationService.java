@@ -6,6 +6,7 @@ import com.health_donate.health.dto.AssociationDTO;
 import com.health_donate.health.entity.Association;
 import com.health_donate.health.mapper.AssociationMapper;
 import com.health_donate.health.repository.AssociationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,22 +52,36 @@ public class AssociationService {
     }
 
     // UPDATE
-    public AssociationDTO updateAssociation(Long id, AssociationDTO dto) {
-        Optional<Association> associationOpt = associationRepository.findById(id);
-        if (associationOpt.isEmpty()) return null;
+    public AssociationDTO updateAssociation(Long id, AssociationDTO dto, MultipartFile logo, MultipartFile cover) throws IOException {
 
-        Association association = associationOpt.get();
+        Association association = associationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Association introuvable pour l'id " + id));
+
+
         association.setName(dto.getName());
         association.setAddress(dto.getAddress());
         association.setPhone(dto.getPhone());
         association.setEmail(dto.getEmail());
-        association.setLogoUrl(dto.getLogoUrl());
         association.setActive(dto.isActive());
         association.setDescription(dto.getDescription());
 
+        if (logo != null && !logo.isEmpty()) {
+            String logoPath = fileStorageService.storeFile(logo);
+            association.setLogoUrl(logoPath);
+        }
+
+
+        if (cover != null && !cover.isEmpty()) {
+            String coverPath = fileStorageService.storeFile(cover);
+            association.setCovertUrl(coverPath);
+        }
+
+
         Association updated = associationRepository.save(association);
+
         return AssociationMapper.toDTO(updated);
     }
+
 
     // DELETE
     public boolean deleteAssociation(Long id) {

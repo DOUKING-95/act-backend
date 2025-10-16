@@ -73,21 +73,48 @@ public class DonationService {
     }
 
     // --- UPDATE ---
-    public DonationDTO updateDonation(Long id, DonationDTO dto) {
-        Optional<Donation> opt = donationRepository.findById(id);
-        if (opt.isEmpty()) return null;
+    public DonationDTO updateDonation(Long id, DonationDTO dto, MultipartFile[] images) throws IOException {
+        // Vérifier si la donation existe
+        Donation donation = donationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Donation introuvable pour l'id " + id));
 
-        Donation donation = opt.get();
+        // 🔹 Mettre à jour les champs
         donation.setTitle(dto.getTitle());
         donation.setDescription(dto.getDescription());
         donation.setCategory(dto.getCategory());
         donation.setQuantity(dto.getQuantity());
         donation.setUrgent(dto.isUrgent());
         donation.setIsAvailable(dto.getIsAvailable());
+        donation.setLocation(dto.getLocation());
+        donation.setPublished(dto.isPublished());
 
-        Donation updated = donationRepository.save(donation);
-        return DonationMapper.toDTO(updated);
+
+        Donation updatedDonation = donationRepository.save(donation);
+
+
+        if (images != null && images.length > 0) {
+
+            List<Image> oldImages = imageRepository.findByDonationId(updatedDonation.getId());
+            imageRepository.deleteAll(oldImages);
+
+            List<Image> savedImages = new ArrayList<>();
+            for (MultipartFile file : images) {
+                String path = fileStorageService.storeFile(file);
+
+                Image img = new Image();
+                img.setUrl(path);
+                img.setName(file.getOriginalFilename());
+                img.setDonation(updatedDonation);
+                savedImages.add(imageRepository.save(img));
+            }
+            updatedDonation.setImages(savedImages);
+        }
+
+        updatedDonation = donationRepository.save(updatedDonation);
+
+        return DonationMapper.toDTO(updatedDonation);
     }
+
 
     // --- DELETE ---
     public boolean deleteDonation(Long id) {
