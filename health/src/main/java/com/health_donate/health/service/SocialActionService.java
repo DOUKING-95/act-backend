@@ -3,13 +3,19 @@ package com.health_donate.health.service;
 
 
 import com.health_donate.health.dto.SocialActionDTO;
+import com.health_donate.health.entity.Image;
 import com.health_donate.health.entity.SocialAction;
 import com.health_donate.health.mapper.SocialActionMapper;
+import com.health_donate.health.repository.ImageRepository;
 import com.health_donate.health.repository.SocialActionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,12 +24,35 @@ public class SocialActionService {
 
 
     private SocialActionRepository socialActionRepository;
+    private ImageRepository imageRepository;
+    private  FileStorageService fileStorageService;
 
     // CREATE
-    public SocialActionDTO createSocialAction(SocialActionDTO dto) {
+    public SocialActionDTO createSocialAction(SocialActionDTO dto, MultipartFile[] images) throws IOException {
+
         SocialAction action = SocialActionMapper.toEntity(dto);
-        SocialAction saved = socialActionRepository.save(action);
-        return SocialActionMapper.toDTO(saved);
+
+
+        SocialAction savedAction = socialActionRepository.save(action);
+
+
+        List<Image> savedImages = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                String path = fileStorageService.storeFile(file);
+
+                Image img = new Image();
+                img.setName(file.getOriginalFilename());
+                img.setUrl(path);
+                img.setSocialAction(savedAction);
+                savedImages.add(imageRepository.save(img));
+            }
+        }
+
+        savedAction.setImages(savedImages);
+        socialActionRepository.save(savedAction);
+
+        return SocialActionMapper.toDTO(savedAction);
     }
 
     // READ
