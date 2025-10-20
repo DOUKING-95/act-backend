@@ -1,11 +1,15 @@
 package com.health_donate.health.entity;
 
 
+import com.health_donate.health.enumT.StatutAsso;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.File;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -34,5 +38,29 @@ public class Association {
 
     private String description;
 
+    private String categorie;
+
+    @Enumerated
+    private StatutAsso statut;
+
+    private Date dateCreation;
+
+    private String typeAssociation;
+
+    private String siteWeb;
+
+    private String ville;
+
+    private String codePostal;
+
+    private String pays;
+
+    private String nomComplet;
+
+    private String fonction;
+
+    private String numeroEnregistrement;
+
+    private Boolean confirmationOfficielle;
 
 }

@@ -4,6 +4,7 @@ package com.health_donate.health.service;
 
 import com.health_donate.health.entity.RefreshToken;
 import com.health_donate.health.entity.Actor;
+import com.health_donate.health.entity.User;
 import com.health_donate.health.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +45,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
-    public void deleteByUser(Actor user) {
+    public void deleteByUser(User user) {
         refreshTokenRepository.deleteByUser(user);
     }
 }

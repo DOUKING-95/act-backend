@@ -4,25 +4,54 @@ package com.health_donate.health.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.AssociationDTO;
+import com.health_donate.health.dto.OngDTO;
 import com.health_donate.health.service.AssociationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.DataInput;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
-@RequestMapping("auth/association")
+@RequestMapping("auth/association/")
+//@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class AssociationControlleur {
 
     private final AssociationService associationService;
+
+
+
+    @GetMapping("list")
+    public ResponseEntity<ApiResponse<?>> allAssociation(){
+        List<AssociationDTO> associationDTOList = associationService.allAssociation();
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        associationDTOList
+                )
+        );
+    }
+
+
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse<?>> getById(@PathVariable Long id) {
+        AssociationDTO associationDTO = associationService.getAssociationById(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        associationDTO
+                )
+        );
+    }
 
 
 
@@ -48,4 +77,49 @@ public class AssociationControlleur {
 
 
     }
+
+    //Create association etant admin:
+    @PostMapping("create")
+    public ResponseEntity<ApiResponse<?>> create(
+            @RequestPart("contenu") AssociationDTO association,
+            @RequestPart(value = "fichier", required = false) MultipartFile logo) throws IOException {
+        AssociationDTO created = associationService.createAssociation(association,logo,null);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        created
+                ));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<AssociationDTO> update(
+            @PathVariable Long id,
+            @RequestPart("contenu") AssociationDTO association,
+            @RequestPart(value = "fichier", required = false) MultipartFile logo
+    ) throws IOException {
+        return ResponseEntity.ok(associationService.updateAssociation(id, association, logo,null));
+    }
+
+    //Pour changer l'etat d'une association :
+    @PutMapping("statut/{id}")
+    public ResponseEntity<?> updateStatut(
+            @PathVariable Long id,
+            @RequestPart("statut") String motif
+    ){
+        return ResponseEntity.ok(associationService.updateStatut(id,motif));
+    }
+
+
+
+    //Pour la suppression d'une association :
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return associationService.deleteAssociation(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
+
 }

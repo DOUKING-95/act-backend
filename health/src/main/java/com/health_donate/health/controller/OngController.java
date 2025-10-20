@@ -1,50 +1,53 @@
 package com.health_donate.health.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.OngDTO;
 import com.health_donate.health.service.OngService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
-@RequestMapping("auth/ong")
+@RequestMapping("auth/ong/")
 @RequiredArgsConstructor
-public class OngControlleur {
-
-
+public class OngController {
 
     private final OngService ongService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<?>> createOng(
-            @RequestPart("ong") String ongJson,
-            @RequestPart(value = "logo", required = false) MultipartFile logo
-    ) throws IOException {
+    @GetMapping
+    public ResponseEntity<List<OngDTO>> getAll() {
+        return ResponseEntity.ok(ongService.getAllOngs());
+    }
 
+    @GetMapping("{id}")
+    public ResponseEntity<OngDTO> getById(@PathVariable Long id) {
+        OngDTO dto = ongService.getById(id);
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+    }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        OngDTO dto = objectMapper.readValue(ongJson, OngDTO.class);
+    @PostMapping
+    public ResponseEntity<OngDTO> create(
+            @RequestPart("contenu") OngDTO dto,
+            @RequestPart(value = "fichier", required = false) MultipartFile logoFile) throws IOException {
+        return ResponseEntity.ok(ongService.createOng(dto, logoFile));
+    }
 
-        OngDTO created = ongService.createOng(dto, logo);
+    @PutMapping("{id}")
+    public ResponseEntity<OngDTO> update(
+            @PathVariable Long id,
+            @RequestPart("contenu") OngDTO dto,
+            @RequestPart(value = "fichier", required = false) MultipartFile logoFile) throws IOException {
+        return ResponseEntity.ok(ongService.updateOng(id, dto, logoFile));
+    }
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
-                new ApiResponse<>(
-                        String.valueOf(HttpStatus.ACCEPTED.value()),
-                        HttpStatus.ACCEPTED.getReasonPhrase(),
-                        created
-                ));
-
-
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return ongService.deleteOng(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }
