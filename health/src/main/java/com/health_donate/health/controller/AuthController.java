@@ -2,15 +2,18 @@ package com.health_donate.health.controller;
 
 
 import com.health_donate.health.dto.ApiResponse;
+import com.health_donate.health.dto.LoginAdminDTO;
 import com.health_donate.health.dto.LoginDTO;
 import com.health_donate.health.dto.RegisterDTO;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.RefreshToken;
 import com.health_donate.health.entity.User;
+import com.health_donate.health.repository.ActorRepository;
 import com.health_donate.health.repository.RoleRepository;
 import com.health_donate.health.repository.UserRepository;
 import com.health_donate.health.security.jwt.JwtService;
 import com.health_donate.health.service.ActorService;
+import com.health_donate.health.service.AuthService;
 import com.health_donate.health.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +42,8 @@ import java.util.Map;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
     private final ActorService actorService;
+    private final AuthService authService;
+    private final ActorRepository actorRepository;
 
     // LOGIN
     @PostMapping("/login")
@@ -64,6 +69,23 @@ import java.util.Map;
         );
     }
 
+    // LOGIN
+    @PostMapping("/loginAdmin")
+    public ResponseEntity<ApiResponse<?>> loginAdmin(@RequestBody LoginAdminDTO request) {
+
+//        Actor user = actorRepository.findByEmail(request.getUsername()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        String accessToken = authService.authenticateByEmail(request.getUsername(), request.getPassword());
+//        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("200", "Connexion réussie", Map.of(
+                        "access_token", accessToken
+//                        "refresh_token", refreshToken.getToken()
+                ))
+        );
+    }
+
     // REFRESH
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<?>> refreshToken(@RequestBody Map<String, String> request) {
@@ -74,7 +96,7 @@ import java.util.Map;
 
         refreshTokenService.verifyExpiration(refreshToken);
 
-        Actor user = refreshToken.getUser();
+        User user = refreshToken.getUser();
         String accessToken = jwtService.generateToken(user);
 
         return ResponseEntity.ok(new ApiResponse<>("200", "Access token renouvelé", Map.of(
@@ -86,7 +108,7 @@ import java.util.Map;
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<?>> logout(@RequestBody Map<String, String> request) {
         String phone = request.get("phone");
-        Actor user = (Actor) userRepository.findByPhoneNumber(phone)
+        User user = (User) userRepository.findByPhoneNumber(phone)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         refreshTokenService.deleteByUser(user);

@@ -1,8 +1,6 @@
-package com.health_donate.health.entity;
-
+package com.health_donate.health.dto.DTOAdmin;
 
 import com.health_donate.health.enumT.StatutAsso;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,56 +9,29 @@ import lombok.Setter;
 import java.io.File;
 import java.util.Date;
 
-@Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "association")
-public class Association {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@AllArgsConstructor
+public class assoDTO {
     private Long id;
-
-    private String name;
-
-    private String address;
-
-    private String phone;
-
-    private String email;
-
-    private String logoUrl;
-
-    private String covertUrl;
-
-    private boolean isActive;
-
-    private String description;
-
+    private String nom;
     private String categorie;
-
-    @Enumerated
+    private String email;
+    private String telephone;
     private StatutAsso statut;
-
     private Date dateCreation;
-
+    private String adresse;
+    private String description;
+    private Boolean estActif;
     private String typeAssociation;
-
+    private File logoFile;
     private String siteWeb;
-
     private String ville;
-
     private String codePostal;
-
     private String pays;
-
     private String nomComplet;
-
     private String fonction;
-
     private String numeroEnregistrement;
-
-    private Boolean confirmationOfficielle;
-
+    private String confirmationOfficielle;
 }

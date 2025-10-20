@@ -33,7 +33,7 @@ public class User implements UserDetails {
 
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -43,6 +43,7 @@ public class User implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
+
     private boolean verified;
     private LocalDateTime createdAt;
 
