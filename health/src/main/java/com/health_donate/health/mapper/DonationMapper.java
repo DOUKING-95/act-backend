@@ -22,7 +22,6 @@ public class DonationMapper {
         dto.setLocation(donation.getLocation());
         dto.setUrgent(donation.isUrgent());
         dto.setPublished(donation.isPublished());
-        dto.setCreatedAt(donation.getCreatedAt());
 
         dto.setDonorId(donation.getDonor() != null ? donation.getDonor().getId() : null);
         dto.setCategory(donation.getCategory() != null ? donation.getCategory() : null);
@@ -68,7 +67,6 @@ public class DonationMapper {
         donation.setLocation(dto.getLocation());
         donation.setUrgent(dto.isUrgent());
         donation.setPublished(dto.isPublished());
-        donation.setCreatedAt(dto.getCreatedAt());
         donation.setDonor(actor);
 
 

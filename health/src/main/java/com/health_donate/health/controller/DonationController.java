@@ -1,5 +1,6 @@
 package com.health_donate.health.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.DonationDTO;
 import com.health_donate.health.service.DonationService;
@@ -13,22 +14,36 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.DataInput;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("auth/donation")
+@RequestMapping("dons")
 @AllArgsConstructor
 public class DonationController {
 
     private  DonationService donationService;
+    private ObjectMapper objectMapper;
 
     @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> createDonation(
-            @RequestPart("donation") DonationDTO donationDTO,
+            @RequestPart("donation") String donationJson,
             @RequestPart("images") MultipartFile[] images
     ) throws IOException {
+
+
+
+        DonationDTO donationDTO = objectMapper.readValue(donationJson, DonationDTO.class);
+
+
         if (images.length != 4) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(
+                            String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                            "Vous devez envoyer exactement 4 images.",
+                            null
+                    )
+            );
         }
 
         DonationDTO created = donationService.createDonationWithImages(donationDTO, images);

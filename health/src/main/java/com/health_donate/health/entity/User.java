@@ -40,6 +40,8 @@ public class User implements UserDetails {
     private String password;
 
     private boolean isActif = false;
+
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
     private boolean verified;
     private LocalDateTime createdAt;
@@ -59,7 +61,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        return List.of(new SimpleGrantedAuthority( role.getName().toString()));
     }
 
     @Override
@@ -67,7 +69,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return phoneNumber;
     }
 
     @Override

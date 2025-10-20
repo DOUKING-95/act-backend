@@ -93,5 +93,17 @@ import java.util.Map;
 
         return ResponseEntity.ok(new ApiResponse<>("200", "Déconnexion réussie", null));
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterDTO request) {
+
+
+
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("200", "Creation réussie",
+                        this.actorService.createActor(request))
+        );
+    }
     }
 

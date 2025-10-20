@@ -24,11 +24,11 @@ public class DonationDTO {
     private String description;
     private DonationCategory category;
     private int quantity;
-    private DonationStatus isAvailable;
+    private DonationStatus isAvailable = DonationStatus.AVAILABLE;
     private String location;
     private boolean urgent;
     private boolean published;
-    private LocalDateTime createdAt;
+
 
     private Long donorId;
 

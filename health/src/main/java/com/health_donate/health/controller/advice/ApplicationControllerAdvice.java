@@ -20,35 +20,37 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.security.SignatureException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class ApplicationControllerAdvice  {
 
-
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleSecurityException(Exception exception) {
+    public ProblemDetail handleSecurityException(Exception exception, HttpServletRequest request) {
         if (exception instanceof BadCredentialsException e) {
-            return createProblemDetail(401, e.getMessage(), "The username or password is incorrect");
+            return createProblemDetail(401, e.getMessage(), "The username or password is incorrect", request.getRequestURI());
         } else if (exception instanceof AccountStatusException e) {
-            return createProblemDetail(403, e.getMessage(), "The account is locked");
+            return createProblemDetail(403, e.getMessage(), "The account is locked", request.getRequestURI());
         } else if (exception instanceof AccessDeniedException e) {
-            return createProblemDetail(403, e.getMessage(), "You are not authorized to access this resource");
+            return createProblemDetail(403, e.getMessage(), "You are not authorized to access this resource", request.getRequestURI());
         } else if (exception instanceof SignatureException e) {
-            return createProblemDetail(403, e.getMessage(), "The JWT signature is invalid");
+            return createProblemDetail(401, e.getMessage(), "The JWT signature is invalid", request.getRequestURI());
         } else if (exception instanceof ExpiredJwtException e) {
-            return createProblemDetail(403, e.getMessage(), "The JWT token has expired");
+            return createProblemDetail(401, e.getMessage(), "The JWT token has expired", request.getRequestURI());
         } else {
-            return createProblemDetail(500, exception.getMessage(), "Unknown internal server error.");
+            return createProblemDetail(500, exception.getMessage(), "Unknown internal server error.", request.getRequestURI());
         }
     }
 
-
-    private ProblemDetail createProblemDetail(int status, String message, String description) {
+    private ProblemDetail createProblemDetail(int status, String message, String description, String path) {
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(status), message);
         detail.setProperty("description", description);
+        detail.setProperty("path", path);
+        detail.setProperty("timestamp", Instant.now());
         return detail;
     }
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<ErrorResponse> handleValidationException(

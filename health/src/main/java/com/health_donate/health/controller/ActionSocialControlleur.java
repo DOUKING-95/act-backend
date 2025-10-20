@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("auth/action-social")
+@RequestMapping("action-socials")
 @RequiredArgsConstructor
 public class ActionSocialControlleur {
 

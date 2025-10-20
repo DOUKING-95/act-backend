@@ -33,6 +33,7 @@ public class CreateAdminService implements CommandLineRunner {
             User admin = new User();
             admin.setName("admin");
             admin.setEmail("admin@admin.com");
+            admin.setPhoneNumber("82232685");
             admin.setActif(true);
             admin.setPassword(passwordEncoder.encode("admin123"));
 

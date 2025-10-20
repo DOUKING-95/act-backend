@@ -1,7 +1,11 @@
 package com.health_donate.health.service;
 
+import com.health_donate.health.dto.ActorDTO;
+import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.User;
+import com.health_donate.health.mapper.ActorMapper;
 import com.health_donate.health.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,10 +30,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + phoneNumber));
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());
 
+    }
+
+    public ActorDTO getUserByPhone(String phone) {
+
+        Actor actor = (Actor) this.userRepository.findByPhoneNumber(phone).orElseThrow(()-> new EntityNotFoundException("Pas de user trouver avec ce numero"));
+
+        return ActorMapper.toDTO(actor);
     }
 }
