@@ -4,6 +4,9 @@ package com.health_donate.health.mapper;
 
 import com.health_donate.health.dto.AssociationDTO;
 import com.health_donate.health.entity.Association;
+import com.health_donate.health.enumT.StatutAsso;
+
+import java.util.Date;
 
 public class AssociationMapper {
 
@@ -21,6 +24,18 @@ public class AssociationMapper {
         dto.setActive(association.isActive());
         dto.setDescription(association.getDescription());
 
+        dto.setStatut(association.getStatut());
+        dto.setDateCreation(association.getDateCreation());
+        dto.setTypeAssociation(association.getTypeAssociation());
+        dto.setSiteWeb(association.getSiteWeb());
+        dto.setVille(association.getVille());
+        dto.setCodePostal(association.getCodePostal());
+        dto.setPays(association.getPays());
+        dto.setNomComplet(association.getNomComplet());
+        dto.setFonction(association.getFonction());
+        dto.setNumeroEnregistrement(association.getNumeroEnregistrement());
+        dto.setConfirmationOfficielle(association.getConfirmationOfficielle());
+
         return dto;
     }
 
@@ -28,15 +43,27 @@ public class AssociationMapper {
         if (dto == null) return null;
 
         Association association = new Association();
-        association.setId(dto.getId());
+//        association.setId(dto.getId());
         association.setName(dto.getName());
         association.setAddress(dto.getAddress());
         association.setPhone(dto.getPhone());
         association.setEmail(dto.getEmail());
         association.setLogoUrl(dto.getLogoUrl());
         association.setCovertUrl(dto.getCovertUrl());
-        association.setActive(dto.isActive());
+        association.setActive(true);
         association.setDescription(dto.getDescription());
+
+        association.setStatut(dto.getStatut());
+        association.setDateCreation(dto.getDateCreation());
+        association.setTypeAssociation(dto.getTypeAssociation());
+        association.setSiteWeb(dto.getSiteWeb());
+        association.setVille(dto.getVille());
+        association.setCodePostal(dto.getCodePostal());
+        association.setPays(dto.getPays());
+        association.setNomComplet(dto.getNomComplet());
+        association.setFonction(dto.getFonction());
+        association.setNumeroEnregistrement(dto.getNumeroEnregistrement());
+        association.setConfirmationOfficielle(dto.getConfirmationOfficielle());
 
         return association;
     }

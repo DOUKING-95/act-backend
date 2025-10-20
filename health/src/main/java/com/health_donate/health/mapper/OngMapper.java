@@ -8,34 +8,61 @@ public class OngMapper {
 
     public static OngDTO toDTO(Ong ong) {
         if (ong == null) return null;
+        return OngDTO.builder()
+                .id(ong.getId())
+                .nom(ong.getNom())
+                .typeOrganisation(ong.getTypeOrganisation())
+                .descriptionMission(ong.getDescriptionMission())
+                .logoUrl(ong.getLogoUrl())
 
-        OngDTO dto = new OngDTO();
-        dto.setId(ong.getId());
-        dto.setName(ong.getName());
-        dto.setAddress(ong.getAddress());
-        dto.setPhone(ong.getPhone());
-        dto.setEmail(ong.getEmail());
-        dto.setLogoUrl(ong.getLogoUrl());
-        dto.setActive(ong.isActive());
-        dto.setDescription(ong.getDescription());
+                .emailContact(ong.getEmailContact())
+                .telephoneContact(ong.getTelephoneContact())
+                .siteWeb(ong.getSiteWeb())
+                .adresse(ong.getAdresse())
+                .ville(ong.getVille())
+                .codePostal(ong.getCodePostal())
+                .pays(ong.getPays())
 
-        return dto;
+                .nomCompletRepresentant(ong.getNomCompletRepresentant())
+                .fonctionRepresentant(ong.getFonctionRepresentant())
+                .emailRepresentant(ong.getEmailRepresentant())
+                .telephoneRepresentant(ong.getTelephoneRepresentant())
+
+                .numeroEnregistrement(ong.getNumeroEnregistrement())
+                .dateCreation(ong.getDateCreation())
+                .statut(ong.getStatut())
+                .confirmationOfficielle(ong.isConfirmationOfficielle())
+                .estActif(ong.isEstActif())
+                .build();
     }
 
     public static Ong toEntity(OngDTO dto) {
         if (dto == null) return null;
+        return Ong.builder()
+                .id(dto.getId())
+                .nom(dto.getNom())
+                .typeOrganisation(dto.getTypeOrganisation())
+                .descriptionMission(dto.getDescriptionMission())
+                .logoUrl(dto.getLogoUrl())
 
-        Ong ong = new Ong();
-        ong.setId(dto.getId());
-        ong.setName(dto.getName());
-        ong.setAddress(dto.getAddress());
-        ong.setPhone(dto.getPhone());
-        ong.setEmail(dto.getEmail());
-        ong.setLogoUrl(dto.getLogoUrl());
-        ong.setActive(dto.isActive());
-        ong.setDescription(dto.getDescription());
+                .emailContact(dto.getEmailContact())
+                .telephoneContact(dto.getTelephoneContact())
+                .siteWeb(dto.getSiteWeb())
+                .adresse(dto.getAdresse())
+                .ville(dto.getVille())
+                .codePostal(dto.getCodePostal())
+                .pays(dto.getPays())
 
-        return ong;
+                .nomCompletRepresentant(dto.getNomCompletRepresentant())
+                .fonctionRepresentant(dto.getFonctionRepresentant())
+                .emailRepresentant(dto.getEmailRepresentant())
+                .telephoneRepresentant(dto.getTelephoneRepresentant())
+
+                .numeroEnregistrement(dto.getNumeroEnregistrement())
+                .dateCreation(dto.getDateCreation())
+                .statut(dto.getStatut())
+                .confirmationOfficielle(dto.isConfirmationOfficielle())
+                .estActif(dto.isEstActif())
+                .build();
     }
 }
-
