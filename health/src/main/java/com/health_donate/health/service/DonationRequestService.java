@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,13 @@ public class DonationRequestService {
         Optional<DonationRequest> opt = donationRequestRepository.findById(id);
         return opt.map(DonationRequestMapper::toDTO).orElse(null);
     }
+//GET ALL
+    public List<DonationRequestDTO> getAllDonationRequests() {
+        return donationRequestRepository.findAll().stream()
+                .map(DonationRequestMapper::toDTO)
+                .toList();
+    }
+
 
     // UPDATE
     public DonationRequestDTO updateDonationRequest(Long id, DonationRequestDTO dto) {

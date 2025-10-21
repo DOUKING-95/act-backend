@@ -28,7 +28,7 @@ public class AssociationControlleur {
 
     @GetMapping("list")
     public ResponseEntity<ApiResponse<?>> allAssociation(){
-        List<AssociationDTO> associationDTOList = associationService.allAssociation();
+        List<AssociationDTO> associationDTOList = associationService.allAssociations();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(
                 new ApiResponse<>(
@@ -52,6 +52,19 @@ public class AssociationControlleur {
         );
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse<?>> getAssociationsByUserId(@PathVariable Long userId) {
+
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        "Association récupéré avec succès",
+                        associationService.getAssociationsByUserId(userId)
+                )
+        );
+
+    }
 
 
     @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

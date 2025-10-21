@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+
 @Entity
 @Getter
 @Setter
@@ -19,13 +21,15 @@ public class Participation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "acteur_id")
+    private boolean status;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "acteur_id", nullable = false)
     private Actor acteur;
 
-    private  boolean status;
 
-    @ManyToOne
-    @JoinColumn(name = "activite_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activite_id", nullable = false)
     private SocialAction activite;
 }

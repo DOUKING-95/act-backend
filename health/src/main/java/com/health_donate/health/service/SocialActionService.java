@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -56,11 +57,20 @@ public class SocialActionService {
         return SocialActionMapper.toDTO(savedAction);
     }
 
-    // READ
+ // GET BY ID
     public SocialActionDTO getSocialActionById(Long id) {
         Optional<SocialAction> opt = socialActionRepository.findById(id);
         return opt.map(SocialActionMapper::toDTO).orElse(null);
     }
+
+//GET ALL
+    public List<SocialActionDTO> getAllSocialActions() {
+        List<SocialAction> actions = socialActionRepository.findAll();
+        return actions.stream()
+                .map(SocialActionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     // UPDATE
     public SocialActionDTO updateSocialAction(Long id, SocialActionDTO dto, MultipartFile[] images) throws IOException {

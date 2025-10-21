@@ -9,13 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("action-socials")
@@ -24,6 +22,7 @@ public class ActionSocialControlleur {
 
 
     private final SocialActionService socialActionService;
+    private final ObjectMapper objectMapper;
 
 
 
@@ -47,5 +46,88 @@ public class ActionSocialControlleur {
                 ));
 
 
+    }
+
+
+    //  GET ALL
+    @GetMapping
+    public ResponseEntity<ApiResponse<?>> getAllSocialActions() {
+        List<SocialActionDTO> actions = socialActionService.getAllSocialActions();
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        "Liste des actions sociales récupérée avec succès",
+                        actions
+                )
+        );
+    }
+
+    //  GET BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<?>> getSocialActionById(@PathVariable Long id) {
+        SocialActionDTO action = socialActionService.getSocialActionById(id);
+
+        if (action == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ApiResponse<>(
+                            String.valueOf(HttpStatus.NOT_FOUND.value()),
+                            "Aucune action sociale trouvée pour cet ID",
+                            null
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        "Action sociale récupérée avec succès",
+                        action
+                )
+        );
+    }
+
+    //  UPDATE
+    @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<?>> updateSocialAction(
+            @PathVariable Long id,
+            @RequestPart("action") String actionJson,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
+    ) throws IOException {
+
+        SocialActionDTO dto = objectMapper.readValue(actionJson, SocialActionDTO.class);
+        SocialActionDTO updated = socialActionService.updateSocialAction(id, dto, images);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        "Action sociale mise à jour avec succès",
+                        updated
+                )
+        );
+    }
+
+    // 🔹 DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<?>> deleteSocialAction(@PathVariable Long id) {
+        boolean deleted = socialActionService.deleteSocialAction(id);
+
+        if (!deleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ApiResponse<>(
+                            String.valueOf(HttpStatus.NOT_FOUND.value()),
+                            "Aucune action sociale trouvée pour suppression",
+                            null
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        "Action sociale supprimée avec succès",
+                        null
+                )
+        );
     }
 }
