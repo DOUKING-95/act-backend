@@ -16,6 +16,6 @@ public class DemandeAdhesionDTO {
     private String statut;
     private LocalDateTime dateDemande;
 
-    private UserDTO user;
+    private ActorDTO user;
     private AssociationDTO association;
 }

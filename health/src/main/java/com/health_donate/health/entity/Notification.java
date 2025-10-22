@@ -1,5 +1,6 @@
 package com.health_donate.health.entity;
 
+import com.health_donate.health.enumT.Destinataire;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Entite pour pour enregister les notifications sur DoNup
@@ -23,14 +25,18 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
-    private boolean isRead = false;
+    private String titre;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private String type;
 
+    @Column(columnDefinition = "TEXT")
+    private String contenu;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Destinataire destinataires;
+
+    private LocalDateTime dateCreation = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "notification",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Reception> receptions;
 }
 
