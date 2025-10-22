@@ -10,4 +10,9 @@ import java.util.List;
 public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<Donation> findByUrgentTrue();
     List<Donation> findByDonorId(Long donorId);
+
+
+        List<Donation> findTop4ByOrderByIdDesc();
+
+
 }

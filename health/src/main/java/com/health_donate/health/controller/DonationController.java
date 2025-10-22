@@ -3,6 +3,8 @@ package com.health_donate.health.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.DonationDTO;
+import com.health_donate.health.entity.Donation;
+import com.health_donate.health.repository.DonationRepository;
 import com.health_donate.health.service.DonationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ public class DonationController {
 
     private  DonationService donationService;
     private ObjectMapper objectMapper;
+    private DonationRepository donationRepository;
 
     @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> createDonation(
@@ -134,6 +137,15 @@ public class DonationController {
                 )
         );
     }
+
+
+    @GetMapping("/dons/last4")
+    public ResponseEntity<List<Donation>> getLastFourDonations() {
+        List<Donation> donations = donationRepository
+                .findTop4ByOrderByIdDesc(); // ou OrderByCreatedAtDesc si tu as un champ date
+        return ResponseEntity.ok(donations);
+    }
+
 
 
 

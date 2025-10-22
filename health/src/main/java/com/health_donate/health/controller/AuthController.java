@@ -87,7 +87,7 @@ import java.util.Map;
     }
 
     // REFRESH
-    @PostMapping("/refresh")
+    @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<?>> refreshToken(@RequestBody Map<String, String> request) {
         String requestToken = request.get("refresh_token");
 

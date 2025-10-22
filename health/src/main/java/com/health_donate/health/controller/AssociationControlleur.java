@@ -80,10 +80,10 @@ public class AssociationControlleur {
 
         AssociationDTO created = associationService.createAssociation(dto, logo, cover);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
-                        String.valueOf(HttpStatus.ACCEPTED.value()),
-                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        String.valueOf(HttpStatus.OK.value()),
+                        HttpStatus.OK.getReasonPhrase(),
                         created
                 ));
 
