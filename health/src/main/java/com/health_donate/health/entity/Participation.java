@@ -18,9 +18,8 @@ public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
-    @JoinColumn(name = "acteur_id")
+    @JoinColumn(name = "actor_id")
     private Actor acteur;
 
     private  boolean status;

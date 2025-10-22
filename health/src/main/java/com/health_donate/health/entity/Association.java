@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -62,5 +63,8 @@ public class Association {
     private String numeroEnregistrement;
 
     private Boolean confirmationOfficielle;
+
+    @OneToMany(mappedBy = "association",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Membre> membres;
 
 }
