@@ -60,7 +60,7 @@ public class AssociationControlleur {
                 new ApiResponse<>(
                         String.valueOf(HttpStatus.OK.value()),
                         "Association récupéré avec succès",
-                        associationService.getAssociationsByUserId(userId)
+                        associationService.getAssociationById(userId)
                 )
         );
 

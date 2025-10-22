@@ -54,6 +54,7 @@ public class DonationMapper {
     }
 
     public static Donation toEntity(DonationDTO dto, Actor actor) {
+
         if (dto == null) return null;
 
         Donation donation = new Donation();
@@ -69,9 +70,9 @@ public class DonationMapper {
         donation.setPublished(dto.isPublished());
         donation.setDonor(actor);
 
-
         return donation;
     }
+
 }
 
 

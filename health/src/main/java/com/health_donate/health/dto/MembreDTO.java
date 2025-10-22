@@ -2,40 +2,32 @@ package com.health_donate.health.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.health_donate.health.entity.Association;
-import com.health_donate.health.entity.Membre;
-import com.health_donate.health.entity.Ong;
+import com.health_donate.health.entity.Reception;
 import com.health_donate.health.entity.User;
-import com.health_donate.health.enumT.Destinataire;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.catalina.LifecycleState;
 
-import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NotificationDTO {
+public class MembreDTO {
 
     private Long id;
-    private String titre;
 
-    private String type;
+    private Boolean actif;
 
-    private String contenu;
+    private AssociationDTO associations;
 
-    private Destinataire destinataires;
+    private Association association;
 
-    private LocalDateTime dateCreation = LocalDateTime.now();
-
-    private String etat;
+    private User user;
 
     private List<ReceptionDTO> receptions;
 }

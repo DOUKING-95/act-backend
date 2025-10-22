@@ -5,9 +5,10 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "organisation")
+@Table(name = "ong")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -48,4 +49,7 @@ public class Ong {
     private String statut;
     private boolean confirmationOfficielle;
     private boolean estActif;
+
+    @OneToMany(mappedBy = "ong",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Reception> receptions;
 }
