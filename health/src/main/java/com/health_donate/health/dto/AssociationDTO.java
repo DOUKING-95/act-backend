@@ -1,21 +1,17 @@
 package com.health_donate.health.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.health_donate.health.enumT.StatutAsso;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.io.File;
 import java.util.Date;
+import java.util.List;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AssociationDTO {
 
     private Long id;
@@ -32,9 +28,11 @@ public class AssociationDTO {
 
     private String covertUrl;
 
-    private Boolean active;
+    private boolean active;
 
     private String description;
+
+    private String categorie;
 
     private StatutAsso statut;
 
@@ -57,4 +55,13 @@ public class AssociationDTO {
     private String numeroEnregistrement;
 
     private Boolean confirmationOfficielle;
+
+    private Long userId;
+
+
+    private List<Long> socialActionIds;
+
+    public boolean getActive() {
+        return  this.active;
+    }
 }

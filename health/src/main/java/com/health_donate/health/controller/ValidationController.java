@@ -22,7 +22,7 @@ public class ValidationController {
 
     private ValidationService validationService;
 
-    @PostMapping( path = "/validation-utilsateur" ,consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping( path = "/validate-utilisation" ,consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<?>> validationUtilsateur(
             @RequestBody Map<String, String> code
     ) {

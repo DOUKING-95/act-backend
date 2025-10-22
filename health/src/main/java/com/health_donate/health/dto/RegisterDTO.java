@@ -9,7 +9,7 @@ public record RegisterDTO(String name, String firstname, String phone, String pa
 
         Actor actor = new Actor();
 
-        actor.setName(dto.name);
+        actor.setName(dto.name());
         actor.setFirstname(dto.firstname);
         actor.setPhoneNumber(dto.phone);
         actor.setPassword(dto.password());

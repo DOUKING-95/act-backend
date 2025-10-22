@@ -1,12 +1,11 @@
 package com.health_donate.health.mapper;
 
-
-
 import com.health_donate.health.dto.AssociationDTO;
 import com.health_donate.health.entity.Association;
-import com.health_donate.health.enumT.StatutAsso;
+import com.health_donate.health.entity.SocialAction;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 public class AssociationMapper {
 
@@ -23,7 +22,7 @@ public class AssociationMapper {
         dto.setCovertUrl(association.getCovertUrl());
         dto.setActive(association.isActive());
         dto.setDescription(association.getDescription());
-
+        dto.setCategorie(association.getCategorie());
         dto.setStatut(association.getStatut());
         dto.setDateCreation(association.getDateCreation());
         dto.setTypeAssociation(association.getTypeAssociation());
@@ -36,6 +35,20 @@ public class AssociationMapper {
         dto.setNumeroEnregistrement(association.getNumeroEnregistrement());
         dto.setConfirmationOfficielle(association.getConfirmationOfficielle());
 
+        if (association.getUser() != null) {
+            dto.setUserId(association.getUser().getId());
+        }
+
+
+        if (association.getSocialActions() != null) {
+            dto.setSocialActionIds(
+                    association.getSocialActions()
+                            .stream()
+                            .map(SocialAction::getId)
+                            .collect(Collectors.toList())
+            );
+        }
+
         return dto;
     }
 
@@ -43,18 +56,18 @@ public class AssociationMapper {
         if (dto == null) return null;
 
         Association association = new Association();
-//        association.setId(dto.getId());
+        association.setId(dto.getId());
         association.setName(dto.getName());
         association.setAddress(dto.getAddress());
         association.setPhone(dto.getPhone());
         association.setEmail(dto.getEmail());
         association.setLogoUrl(dto.getLogoUrl());
         association.setCovertUrl(dto.getCovertUrl());
-        association.setActive(true);
+        association.setActive(dto.getActive());
         association.setDescription(dto.getDescription());
-
+        association.setCategorie(dto.getCategorie());
         association.setStatut(dto.getStatut());
-        association.setDateCreation(dto.getDateCreation());
+        association.setDateCreation(dto.getDateCreation() != null ? dto.getDateCreation() : new Date());
         association.setTypeAssociation(dto.getTypeAssociation());
         association.setSiteWeb(dto.getSiteWeb());
         association.setVille(dto.getVille());
@@ -65,7 +78,8 @@ public class AssociationMapper {
         association.setNumeroEnregistrement(dto.getNumeroEnregistrement());
         association.setConfirmationOfficielle(dto.getConfirmationOfficielle());
 
+
+
         return association;
     }
 }
-

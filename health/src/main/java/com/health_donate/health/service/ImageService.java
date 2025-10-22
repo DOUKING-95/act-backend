@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +32,13 @@ public class ImageService {
         Optional<Image> opt = imageRepository.findById(id);
         return opt.map(ImageMapper::toDTO).orElse(null);
     }
+
+    public List<ImageDTO> getAllImages() {
+        return imageRepository.findAll().stream()
+                .map(ImageMapper::toDTO)
+                .toList();
+    }
+
 
     // UPDATE
     public ImageDTO updateImage(Long id, ImageDTO dto) {

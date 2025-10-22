@@ -19,6 +19,7 @@ import com.health_donate.health.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +49,9 @@ public class AssociationService {
     private MembreRepository membreRepository;
 
     //Creation d'une association
+    /**
+     * Crée une nouvelle association et son représentant utilisateur.
+     */
     public AssociationDTO createAssociation(AssociationDTO dto, MultipartFile logo, MultipartFile cover) throws IOException {
         //Vérification si le représentant existe
         User representant = userRepository.findByEmailOrPhoneNumber(dto.getEmail(), dto.getPhone())
@@ -66,6 +70,8 @@ public class AssociationService {
         Role roleAssociation = roleRepository.findByName(UserRole.ASSOCIATION_ROLE)
                 .orElseThrow(() -> new RuntimeException("Le rôle Association n'existe pas"));
         representant.setRole(roleAssociation);
+
+        // Sauvegarde / mise à jour
         userRepository.save(representant);
 
         //Création de l'association
@@ -73,6 +79,8 @@ public class AssociationService {
         association.setDateCreation(new Date());
         association.setStatut(StatutAsso.En_attente);
         association.setActive(true);
+        association.setUser(representant);
+
 
         if (logo != null && !logo.isEmpty()) {
             String logoPath = fileStorageService.storeFile(logo);
@@ -96,26 +104,33 @@ public class AssociationService {
         return AssociationMapper.toDTO(savedAssociation);
     }
 
-    //Lister toutes les associations
-    public List<AssociationDTO> allAssociation(){
-       return associationRepository.findAll()
+    /**
+     * Retourne toutes les associations.
+     */
+    public List<AssociationDTO> allAssociations() {
+        return associationRepository.findAll()
                 .stream()
                 .map(AssociationMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // READ
+    /**
+     * Récupère une association par ID.
+     */
     public AssociationDTO getAssociationById(Long id) {
         Optional<Association> associationOpt = associationRepository.findById(id);
         return associationOpt.map(AssociationMapper::toDTO).orElse(null);
     }
 
-    // UPDATE
+    /**
+     * Met à jour les informations d’une association.
+     */
     public AssociationDTO updateAssociation(Long id, AssociationDTO dto, MultipartFile logo, MultipartFile cover) throws IOException {
 
         Association association = associationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Association introuvable pour l'id " + id));
 
+        //  Mise à jour des champs
         association.setName(dto.getName());
         association.setAddress(dto.getAddress());
         association.setPhone(dto.getPhone());
@@ -135,6 +150,7 @@ public class AssociationService {
         association.setNumeroEnregistrement(dto.getNumeroEnregistrement());
         association.setConfirmationOfficielle(dto.getConfirmationOfficielle());
 
+        //  Fichiers
         if (logo != null && !logo.isEmpty()) {
             String logoPath = fileStorageService.storeFile(logo);
             association.setLogoUrl(logoPath);
@@ -152,10 +168,13 @@ public class AssociationService {
         return AssociationMapper.toDTO(updated);
     }
 
+    /**
+     * Modifie le statut d’une association.
+     */
+    public AssociationDTO updateStatut(Long id, String statut) {
+        Association association = associationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Association introuvable pour l'id " + id));
 
-    //Modification du statut :
-    public AssociationDTO updateStatut(Long id,String statut){
-        Association association = associationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Association introuvable pour l'id " + id));
         String statutStr = statut.replace("\"", "");
         StatutAsso statutEnum = StatutAsso.valueOf(statutStr);
         association.setStatut(statutEnum);
@@ -168,7 +187,9 @@ public class AssociationService {
         return  AssociationMapper.toDTO(asso);
     }
 
-    // DELETE
+    /**
+     * Supprime une association.
+     */
     public boolean deleteAssociation(Long id) {
         if (!associationRepository.existsById(id)) return false;
         associationRepository.deleteById(id);

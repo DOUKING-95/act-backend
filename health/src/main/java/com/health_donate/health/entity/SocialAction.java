@@ -1,6 +1,5 @@
 package com.health_donate.health.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,24 +16,24 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "action_social")
 public class SocialAction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String titre;
-
     private String lieu;
-
     private String description;
-
-    @OneToMany
-    private List<Image> images;
-
     private boolean passed;
-
     private int benevolNumber;
+
+    @OneToMany(mappedBy = "socialAction", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "activite", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();
-    // Getters,
+
+    @ManyToOne
+    @JoinColumn(name = "association_id")
+    private Association association;
 }

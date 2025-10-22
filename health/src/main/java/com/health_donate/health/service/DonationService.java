@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -71,6 +72,15 @@ public class DonationService {
         Optional<Donation> opt = donationRepository.findById(id);
         return opt.map(DonationMapper::toDTO).orElse(null);
     }
+
+    // --- GET ALL ---
+    public List<DonationDTO> getAllDonations() {
+        List<Donation> donations = donationRepository.findAll();
+        return donations.stream()
+                .map(DonationMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     // --- UPDATE ---
     public DonationDTO updateDonation(Long id, DonationDTO dto, MultipartFile[] images) throws IOException {

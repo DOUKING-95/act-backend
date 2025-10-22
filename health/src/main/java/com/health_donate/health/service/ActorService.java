@@ -13,14 +13,17 @@ import com.health_donate.health.repository.RoleRepository;
 import com.health_donate.health.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
 
+
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ActorService {
 
 
@@ -35,10 +38,16 @@ public class ActorService {
     public ActorDTO createActor(RegisterDTO dto)  {
 
         Role role =  this.roleRepository.findById(1L).orElseThrow(()-> new EntityNotFoundException("Pas de role pour id :) 1"));
-
+        log.info ("Recherche utilisateur avec phone: " + dto.phone());
+        System.out.println("Email avant save : " + dto.phone());
        Optional<User> user = this.userRepository.findByPhoneNumber(dto.phone());
 
-       if (user.isPresent()){
+        log.info("Recherche utilisateur avec phone: " + dto.phone());
+        System.out.println("Email DTO: " + dto.email());
+        System.out.println("Phone DTO: " + dto.phone());
+
+
+        if (user.isPresent()){
            throw  new RuntimeException("Ce numéro est déjà réconnu par le systeme Act ! Merci de renseignez un autre numéro .");
        }
 
@@ -54,6 +63,9 @@ public class ActorService {
 
         actor.setPassword(passwordEncoder.encode(dto.password()));
         actor.setRole(role);
+        System.out.println("Email avant save : " + actor.getEmail());
+        System.out.println("Phone avant save : " + actor.getPhoneNumber());
+
 
         Actor savedActor = actorRepository.save(actor);
 

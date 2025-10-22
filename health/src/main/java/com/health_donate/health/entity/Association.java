@@ -19,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "association")
 public class Association {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,7 +42,7 @@ public class Association {
 
     private String categorie;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private StatutAsso statut;
 
     private Date dateCreation;
@@ -67,4 +68,11 @@ public class Association {
     @OneToMany(mappedBy = "association",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Membre> membres;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    @OneToMany(mappedBy = "association", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialAction> socialActions;
 }
