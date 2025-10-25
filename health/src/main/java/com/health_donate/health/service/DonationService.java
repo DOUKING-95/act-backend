@@ -7,6 +7,7 @@ import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.Donation;
 import com.health_donate.health.entity.Image;
 import com.health_donate.health.entity.User;
+import com.health_donate.health.enumT.DonationStatus;
 import com.health_donate.health.mapper.DonationMapper;
 import com.health_donate.health.repository.ActorRepository;
 import com.health_donate.health.repository.DonationRepository;
@@ -124,8 +125,6 @@ public class DonationService {
 
         return DonationMapper.toDTO(updatedDonation);
     }
-
-
     // --- DELETE ---
     public boolean deleteDonation(Long id) {
         if (!donationRepository.existsById(id)) return false;

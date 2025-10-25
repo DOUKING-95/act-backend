@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -22,4 +23,6 @@ public class DonationRequestDTO {
     private LocalDateTime createdAt;
     private Long donationId;
     private Long requesterId;
+    private String name;
+    private String type;
 }

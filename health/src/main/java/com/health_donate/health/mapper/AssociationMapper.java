@@ -63,7 +63,6 @@ public class AssociationMapper {
         association.setEmail(dto.getEmail());
         association.setLogoUrl(dto.getLogoUrl());
         association.setCovertUrl(dto.getCovertUrl());
-        association.setActive(dto.getActive());
         association.setDescription(dto.getDescription());
         association.setCategorie(dto.getCategorie());
         association.setStatut(dto.getStatut());

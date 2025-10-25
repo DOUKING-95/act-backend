@@ -135,7 +135,6 @@ public class AssociationService {
         association.setAddress(dto.getAddress());
         association.setPhone(dto.getPhone());
         association.setEmail(dto.getEmail());
-        association.setActive(dto.getActive());
         association.setDescription(dto.getDescription());
 
         association.setStatut(dto.getStatut());
