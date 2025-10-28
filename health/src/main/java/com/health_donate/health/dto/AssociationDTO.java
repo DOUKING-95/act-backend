@@ -58,7 +58,7 @@ public class AssociationDTO {
 
     private Long userId;
 
-
+    private List<Long> benevolesIds;
     private List<Long> socialActionIds;
 
     public boolean getActive() {

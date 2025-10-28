@@ -20,7 +20,7 @@ public class Participation {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "actor_id")
-    private Actor acteur;
+    private Actor actor;
 
     private  boolean status;
 

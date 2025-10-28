@@ -1,6 +1,7 @@
 package com.health_donate.health.controller;
 
 import com.health_donate.health.dto.DemandeAdhesionDTO;
+import com.health_donate.health.dto.DemandeAdhesionRequest;
 import com.health_donate.health.service.DemandeAdhesionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("auth/demandes")
+@RequestMapping("demandes")
 @RequiredArgsConstructor
 public class DemandeAdhesionController {
 
@@ -17,11 +18,13 @@ public class DemandeAdhesionController {
 
     @PostMapping("/create")
     public ResponseEntity<DemandeAdhesionDTO> faireDemande(
-            @RequestParam Long userId,
-            @RequestParam Long associationId,
-            @RequestParam(required = false) String message
+            @RequestBody DemandeAdhesionRequest request
     ) {
-        return ResponseEntity.ok(demandeAdhesionService.faireDemande(userId, associationId, message));
+        return ResponseEntity.ok(demandeAdhesionService.faireDemande(
+                request.getUserId(),
+                request.getAssociationId(),
+                request.getMessage()
+        ));
     }
 
     @GetMapping("/attente/{associationId}")

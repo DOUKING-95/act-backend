@@ -14,8 +14,8 @@ public class ParticipationMapper {
 
         ParticipationDTO dto = new ParticipationDTO();
         dto.setId(participation.getId());
-        dto.setActeurId(
-                participation.getActeur() != null ? participation.getActeur().getId() : null
+        dto.setActorId(
+                participation.getActor() != null ? participation.getActor().getId() : null
         );
         dto.setActiviteId(
                 participation.getActivite() != null ? participation.getActivite().getId() : null
@@ -28,7 +28,7 @@ public class ParticipationMapper {
 
         Participation participation = new Participation();
         participation.setId(dto.getId());
-        participation.setActeur(acteur);
+        participation.setActor(acteur);
         participation.setActivite(activite);
         return participation;
     }

@@ -20,6 +20,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -112,6 +115,24 @@ public class AssociationService {
                 .stream()
                 .map(AssociationMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+
+    public Page<AssociationDTO> getAllAssociationsPaged(int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Association> associations = associationRepository.findAll(pageRequest);
+        return associations.map(AssociationMapper::toDTO);
+    }
+
+
+    public Page<AssociationDTO> getAssociationsByUserPaged(Long userId, int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Association> associations = associationRepository.findByUserId(userId, pageRequest);
+        return associations.map(AssociationMapper::toDTO);
     }
 
     /**

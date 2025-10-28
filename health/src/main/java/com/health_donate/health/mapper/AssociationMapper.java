@@ -2,6 +2,7 @@ package com.health_donate.health.mapper;
 
 import com.health_donate.health.dto.AssociationDTO;
 import com.health_donate.health.entity.Association;
+import com.health_donate.health.entity.Membre;
 import com.health_donate.health.entity.SocialAction;
 
 import java.util.Date;
@@ -37,6 +38,15 @@ public class AssociationMapper {
 
         if (association.getUser() != null) {
             dto.setUserId(association.getUser().getId());
+        }
+
+        if (association.getMembres() != null) {
+            dto.setBenevolesIds(
+                    association.getMembres()
+                            .stream()
+                            .map(Membre::getId)
+                            .collect(Collectors.toList())
+            );
         }
 
 

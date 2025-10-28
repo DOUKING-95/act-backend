@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.DonationDTO;
 import com.health_donate.health.entity.Donation;
+import com.health_donate.health.enumT.DonationStatus;
 import com.health_donate.health.repository.DonationRepository;
 import com.health_donate.health.service.DonationService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,23 @@ public class DonationController {
     private  DonationService donationService;
     private ObjectMapper objectMapper;
     private DonationRepository donationRepository;
+
+
+    @GetMapping(path = "countByUser/{donorId}")
+    public ResponseEntity<ApiResponse<?>> getDonEffectuerByUser(
+            @PathVariable Long donorId
+
+
+    ){
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        HttpStatus.OK.getReasonPhrase(),
+                        donationRepository.countByDonorIdAndStatus(donorId, DonationStatus.AVAILABLE)
+                ));
+
+    }
 
     @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> createDonation(
@@ -86,6 +105,8 @@ public class DonationController {
             );
         }
 
+
+
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         String.valueOf(HttpStatus.OK.value()),
@@ -93,6 +114,19 @@ public class DonationController {
                         donation
                 )
         );
+    }
+
+    @GetMapping("/actor/{donorId}")
+    public Page<DonationDTO> getDonationsByActor(
+            @PathVariable Long donorId,
+            @RequestParam(defaultValue = "0") int page) {
+        return donationService.getDonationsByActorPaged(donorId, page);
+    }
+
+    @GetMapping("/all")
+    public Page<DonationDTO> getAllDonationsPaged(
+            @RequestParam(defaultValue = "0") int page) {
+        return donationService.getAllDonationsPaged(page);
     }
 
 

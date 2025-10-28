@@ -42,7 +42,7 @@ String code = generateCode();
         validation.setCode(code);
 
         this.validationRepo.save(validation);
-        String subject = "Code d'activation de Parrainage Plus";
+        String subject = "Code d'activation de Act !";
         String message = String.format("Votre code d'activation est %s , Mr %s", code,user.getEmail());
         this.mailSender.sendSimpleEmail(user.getEmail(), subject, message);
 
@@ -75,9 +75,9 @@ String code = generateCode();
         Validation validation = validationRepo.findByUser(user)
                 .orElseThrow(() -> new IllegalStateException("Aucune validation existante pour cet utilisateur"));
 
-        if (validation.getExpiration().isAfter(Instant.now())) {
-            return "Le code actuel n’a pas encore expiré. Veuillez patienter avant de redemander un nouveau code.";
-        }
+     //   if (validation.getExpiration().isAfter(Instant.now())) {
+    //        return "Le code actuel n’a pas encore expiré. Veuillez patienter avant de redemander un nouveau code.";
+    //    }
 
 
         String newCode = generateCode();

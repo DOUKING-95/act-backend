@@ -2,10 +2,12 @@ package com.health_donate.health.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.SocialActionDTO;
 import com.health_donate.health.service.SocialActionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,21 @@ public class ActionSocialControlleur {
     private final SocialActionService socialActionService;
     private final ObjectMapper objectMapper;
 
+    @GetMapping("/action-socials")
+    public Page<SocialActionDTO> getAllSocialActionsPaged(
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return socialActionService.getAllSocialActionsPaged(page);
+    }
 
+
+    @GetMapping("/by-association/{associationId}")
+    public Page<SocialActionDTO> getActivitiesByAssociation(
+            @PathVariable Long associationId,
+            @RequestParam(defaultValue = "0") int page // page = 0 par défaut
+    ) {
+        return socialActionService.getActivitiesByAssociation(associationId, page);
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> createSocialAction(
@@ -34,6 +50,7 @@ public class ActionSocialControlleur {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         SocialActionDTO dto = objectMapper.readValue(socialActionJson, SocialActionDTO.class);
 
         SocialActionDTO created = socialActionService.createSocialAction(dto, images);
@@ -107,7 +124,7 @@ public class ActionSocialControlleur {
         );
     }
 
-    // 🔹 DELETE
+    //  DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> deleteSocialAction(@PathVariable Long id) {
         boolean deleted = socialActionService.deleteSocialAction(id);

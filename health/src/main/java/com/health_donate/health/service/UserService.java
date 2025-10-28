@@ -4,6 +4,7 @@ import com.health_donate.health.dto.ActorDTO;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.User;
 import com.health_donate.health.mapper.ActorMapper;
+import com.health_donate.health.repository.ActorRepository;
 import com.health_donate.health.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
+    private ActorRepository actorRepository;
 
     public User save(User user) {
         return userRepository.save(user);
@@ -39,7 +41,7 @@ public class UserService implements UserDetailsService {
 
     public ActorDTO getUserByPhone(String phone) {
 
-        Actor actor = (Actor) this.userRepository.findByPhoneNumber(phone).orElseThrow(()-> new EntityNotFoundException("Pas de user trouver avec ce numero"));
+        Actor actor =  this.actorRepository.findByPhoneNumber(phone).orElseThrow(()-> new EntityNotFoundException("Pas de user trouver avec ce numero"));
 
         return ActorMapper.toDTO(actor);
     }

@@ -3,14 +3,19 @@ package com.health_donate.health.service;
 
 
 import com.health_donate.health.dto.SocialActionDTO;
+import com.health_donate.health.entity.Association;
 import com.health_donate.health.entity.Image;
 import com.health_donate.health.entity.SocialAction;
 import com.health_donate.health.mapper.SocialActionMapper;
+import com.health_donate.health.repository.AssociationRepository;
 import com.health_donate.health.repository.ImageRepository;
 import com.health_donate.health.repository.SocialActionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,12 +32,17 @@ public class SocialActionService {
 
     private SocialActionRepository socialActionRepository;
     private ImageRepository imageRepository;
+    private AssociationRepository associationRepository;
     private  FileStorageService fileStorageService;
 
     // CREATE
     public SocialActionDTO createSocialAction(SocialActionDTO dto, MultipartFile[] images) throws IOException {
 
+        Association assoc = associationRepository.findById(dto.getAssociationId())
+                .orElseThrow(() -> new RuntimeException("Association introuvable"));
+
         SocialAction action = SocialActionMapper.toEntity(dto);
+        action.setAssociation(assoc);
 
 
         SocialAction savedAction = socialActionRepository.save(action);
@@ -51,7 +61,9 @@ public class SocialActionService {
             }
         }
 
-        savedAction.setImages(savedImages);
+        action.getImages().clear();
+        action.getImages().addAll(savedImages);
+
         socialActionRepository.save(savedAction);
 
         return SocialActionMapper.toDTO(savedAction);
@@ -61,6 +73,25 @@ public class SocialActionService {
     public SocialActionDTO getSocialActionById(Long id) {
         Optional<SocialAction> opt = socialActionRepository.findById(id);
         return opt.map(SocialActionMapper::toDTO).orElse(null);
+    }
+
+    public Page<SocialActionDTO> getAllSocialActionsPaged(int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<SocialAction> actionsPage = socialActionRepository.findAll(pageRequest);
+
+
+        return actionsPage.map(SocialActionMapper::toDTO);
+    }
+
+    public Page<SocialActionDTO> getActivitiesByAssociation(Long associationId, int page ) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<SocialAction> actionsPage = socialActionRepository.findByAssociationId(associationId, pageRequest);
+
+
+        return actionsPage.map(SocialActionMapper::toDTO);
     }
 
 //GET ALL

@@ -15,6 +15,9 @@ import com.health_donate.health.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,6 +82,26 @@ public class DonationService {
         return donations.stream()
                 .map(DonationMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Page<DonationDTO> getDonationsByActorPaged(Long donorId, int page) {
+        int size = 5;
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Donation> donationsPage = donationRepository.findByDonorId(donorId, pageRequest);
+
+        return donationsPage.map(DonationMapper::toDTO);
+    }
+
+    public Page<DonationDTO> getAllDonationsPaged(int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Donation> donationsPage = donationRepository.findAll(pageRequest);
+
+
+        return donationsPage.map(DonationMapper::toDTO);
     }
 
 

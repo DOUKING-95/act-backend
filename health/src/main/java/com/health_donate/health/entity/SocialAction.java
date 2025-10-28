@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,13 @@ public class SocialAction {
 
     private String titre;
     private String lieu;
+    private LocalDateTime dateDebut;
+    private LocalDateTime dateFin;
+    private  String heureDebut;
+    private  String heureFin;
+   private  String infosSupplementaires ;
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
     private String description;
     private boolean passed;
     private int benevolNumber;
@@ -34,6 +42,6 @@ public class SocialAction {
     private List<Participation> participations = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "association_id")
+    @JoinColumn(name = "association_id", nullable = false)
     private Association association;
 }

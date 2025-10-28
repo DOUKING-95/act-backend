@@ -89,7 +89,7 @@ public class ActorService {
         actor.setFirstname(dto.getFirstname());
         actor.setEmail(dto.getEmail());
         actor.setPhoneNumber(dto.getPhoneNumber());
-        actor.setActif(dto.isActif());
+        actor.setAddress(dto.getAddress());
         actor.setVerified(dto.isVerified());
 
         // Ici, on peut gérer role si besoin

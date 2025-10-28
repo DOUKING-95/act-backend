@@ -1,10 +1,7 @@
 package com.health_donate.health.controller;
 
 
-import com.health_donate.health.dto.ApiResponse;
-import com.health_donate.health.dto.LoginAdminDTO;
-import com.health_donate.health.dto.LoginDTO;
-import com.health_donate.health.dto.RegisterDTO;
+import com.health_donate.health.dto.*;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.RefreshToken;
 import com.health_donate.health.entity.User;
@@ -12,10 +9,9 @@ import com.health_donate.health.repository.ActorRepository;
 import com.health_donate.health.repository.RoleRepository;
 import com.health_donate.health.repository.UserRepository;
 import com.health_donate.health.security.jwt.JwtService;
-import com.health_donate.health.service.ActorService;
-import com.health_donate.health.service.AuthService;
-import com.health_donate.health.service.RefreshTokenService;
+import com.health_donate.health.service.*;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,10 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -39,11 +32,14 @@ import java.util.Map;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
     private final ActorService actorService;
     private final AuthService authService;
-    private final ActorRepository actorRepository;
+    private final SocialActionService socialActionService;
+    private DonationService donationService;
+    private ImageService imageService;
+    private final AssociationService associationService;
+
 
     // LOGIN
     @PostMapping("/login")
@@ -125,6 +121,41 @@ import java.util.Map;
         return ResponseEntity.ok(
                 new ApiResponse<>("200", "Creation réussie",
                         this.actorService.createActor(request))
+        );
+    }
+
+    @GetMapping("/action-socials")
+    public Page<SocialActionDTO> getAllSocialActionsPaged(
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return socialActionService.getAllSocialActionsPaged(page);
+    }
+
+    @GetMapping("/all")
+    public Page<DonationDTO> getAllDonationsPaged(
+            @RequestParam(defaultValue = "0") int page) {
+        return donationService.getAllDonationsPaged(page);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ImageDTO>> getImageById(@PathVariable Long id) {
+        ImageDTO dto = imageService.getImageById(id);
+        if (dto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("404", "Image non trouvée", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>("200", "Image trouvée", dto));
+    }
+
+    @GetMapping("/asso/{id}")
+    public ResponseEntity<ApiResponse<?>> getById(@PathVariable Long id) {
+        AssociationDTO associationDTO = associationService.getAssociationById(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        associationDTO
+                )
         );
     }
     }
