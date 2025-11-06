@@ -33,6 +33,8 @@ public class User implements UserDetails {
 
     private String name;
 
+    private String address;
+
     @Column(nullable = true, unique = true)
     private String email;
 

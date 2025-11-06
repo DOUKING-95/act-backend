@@ -12,11 +12,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ParticipationDTO {
     private Long id;
-    private Long acteurId;
-   private  boolean status;
+    private Long actorId;
     private Long activiteId;
+    private boolean status;
 
-    public boolean getStatus() {
-        return  status;
+
+
+    public boolean getSatus() {
+        return status;
     }
 }

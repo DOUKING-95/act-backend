@@ -6,6 +6,7 @@ import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.Role;
 import com.health_donate.health.entity.User;
 import com.health_donate.health.mapper.ActorMapper;
+import com.health_donate.health.repository.ActorRepository;
 import com.health_donate.health.mapper.DonationRequestMapper;
 import com.health_donate.health.mapper.UserMapper;
 import com.health_donate.health.repository.ActorRepository;
@@ -29,6 +30,8 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    private UserRepository userRepository;
+    private ActorRepository actorRepository;
 
     public User save(User user) {
         return userRepository.save(user);
@@ -48,7 +51,7 @@ public class UserService implements UserDetailsService {
 
     public ActorDTO getUserByPhone(String phone) {
 
-        Actor actor = (Actor) this.userRepository.findByPhoneNumber(phone).orElseThrow(()-> new EntityNotFoundException("Pas de user trouver avec ce numero"));
+        Actor actor =  this.actorRepository.findByPhoneNumber(phone).orElseThrow(()-> new EntityNotFoundException("Pas de user trouver avec ce numero"));
 
         return ActorMapper.toDTO(actor);
     }

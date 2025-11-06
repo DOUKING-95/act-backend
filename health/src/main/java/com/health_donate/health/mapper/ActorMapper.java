@@ -25,6 +25,10 @@ public class ActorMapper {
         dto.setPhoneNumber(actor.getPhoneNumber());
         dto.setVerified(actor.isVerified());
         dto.setFirstname(actor.getFirstname());
+        dto.setAddress(actor.getAddress());
+        dto.setCreatedAt(actor.getCreatedAt());
+
+
 
         if (actor.getRole() != null) {
             dto.setRoleId(actor.getRole().getId());
@@ -65,6 +69,7 @@ public class ActorMapper {
         actor.setPhoneNumber(dto.getPhoneNumber());
         actor.setVerified(dto.isVerified());
         actor.setFirstname(dto.getFirstname());
+        actor.setAddress(dto.getAddress());
 
         if (dto.getRoleId() != null) {
             Role role = new Role();

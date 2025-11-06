@@ -1,12 +1,11 @@
 package com.health_donate.health.mapper;
 
-
 import com.health_donate.health.dto.SocialActionDTO;
 import com.health_donate.health.entity.SocialAction;
 import com.health_donate.health.entity.Image;
 import com.health_donate.health.entity.Participation;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class SocialActionMapper {
@@ -21,12 +20,20 @@ public class SocialActionMapper {
         dto.setDescription(action.getDescription());
         dto.setPassed(action.isPassed());
         dto.setBenevolNumber(action.getBenevolNumber());
+        dto.setDateDebut(action.getDateDebut());
+        dto.setDateFin(action.getDateFin());
+        dto.setHeureDebut(action.getHeureDebut() != null ? action.getHeureDebut() : "");
+        dto.setHeureFin(action.getHeureFin() != null ? action.getHeureFin() : "");
+        dto.setInfosSupplementaires(action.getInfosSupplementaires() != null ? action.getInfosSupplementaires() :"");
 
+        dto.setAssociationId(action.getAssociation().getId());
         if (action.getImages() != null) {
             dto.setImageIds(action.getImages()
                     .stream()
                     .map(Image::getId)
                     .collect(Collectors.toList()));
+        } else {
+            dto.setImageIds(new ArrayList<>());
         }
 
         if (action.getParticipations() != null) {
@@ -34,6 +41,8 @@ public class SocialActionMapper {
                     .stream()
                     .map(Participation::getId)
                     .collect(Collectors.toList()));
+        } else {
+            dto.setParticipationIds(new ArrayList<>());
         }
 
         return dto;
@@ -49,10 +58,15 @@ public class SocialActionMapper {
         action.setDescription(dto.getDescription());
         action.setPassed(dto.isPassed());
         action.setBenevolNumber(dto.getBenevolNumber());
+        action.setDateDebut(dto.getDateDebut());
+        action.setDateFin(dto.getDateFin());
+        action.setHeureDebut(dto.getHeureDebut());
+        action.setHeureFin(dto.getHeureFin());
+        action.setInfosSupplementaires(dto.getInfosSupplementaires() != null ? dto.getInfosSupplementaires() : "");
 
-        // Les listes d’IDs ne sont pas converties ici pour éviter de charger des entités
-        // Cela peut être fait dans le service si besoin
+
+        // Les listes d’IDs ne sont pas converties en entités ici pour éviter de charger la DB
+        // Cela peut être fait dans le service si nécessaire
         return action;
     }
 }
-

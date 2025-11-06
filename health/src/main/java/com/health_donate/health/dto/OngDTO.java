@@ -17,7 +17,8 @@ public class OngDTO {
     private String nom;
     private String typeOrganisation;
     private String descriptionMission;
-    private String logoUrl;
+    private String profilUrl;
+    private String coverUrl;
 
     // Coordonnées
     private String emailContact;

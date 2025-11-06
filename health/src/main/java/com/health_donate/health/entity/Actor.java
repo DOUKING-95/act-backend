@@ -25,7 +25,7 @@ public class Actor  extends  User{
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DonationRequest> donationRequests = new ArrayList<>();
 
-    @OneToMany(mappedBy = "acteur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "actor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Participation> participations;
 
 

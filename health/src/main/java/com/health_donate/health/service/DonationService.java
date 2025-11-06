@@ -3,6 +3,7 @@ package com.health_donate.health.service;
 
 
 import com.health_donate.health.dto.DonationDTO;
+import com.health_donate.health.dto.TopDonorDTO;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.Donation;
 import com.health_donate.health.entity.Image;
@@ -16,6 +17,9 @@ import com.health_donate.health.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,6 +86,26 @@ public class DonationService {
                 .collect(Collectors.toList());
     }
 
+    public Page<DonationDTO> getDonationsByActorPaged(Long donorId, int page) {
+        int size = 5;
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Donation> donationsPage = donationRepository.findByDonorId(donorId, pageRequest);
+
+        return donationsPage.map(DonationMapper::toDTO);
+    }
+
+    public Page<DonationDTO> getAllDonationsPaged(int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Donation> donationsPage = donationRepository.findAll(pageRequest);
+
+
+        return donationsPage.map(DonationMapper::toDTO);
+    }
+
 
     // --- UPDATE ---
     public DonationDTO updateDonation(Long id, DonationDTO dto, MultipartFile[] images) throws IOException {
@@ -125,6 +149,19 @@ public class DonationService {
 
         return DonationMapper.toDTO(updatedDonation);
     }
+
+
+    public List<TopDonorDTO> getTop15Donors() {
+        List<Object[]> results = donationRepository.findTop15Donors();
+        return results.stream()
+                .map(obj -> new TopDonorDTO(
+                        ((Number) obj[0]).longValue(),
+                        ((Number) obj[1]).longValue()))
+                .limit(15)
+                .toList();
+    }
+
+
     // --- DELETE ---
     public boolean deleteDonation(Long id) {
         if (!donationRepository.existsById(id)) return false;

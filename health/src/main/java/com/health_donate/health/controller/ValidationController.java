@@ -33,4 +33,12 @@ public class ValidationController {
                         HttpStatus.ACCEPTED.getReasonPhrase(),
                         this.validationService.validationUtilsateur(code)));
     }
+
+
+    @PostMapping("/resend")
+    public ResponseEntity<String> resend(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String response = validationService.resendValidation(email);
+        return ResponseEntity.ok(response);
+    }
 }

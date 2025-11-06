@@ -2,8 +2,11 @@ package com.health_donate.health.controller;
 
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.DonationRequestDTO;
+import com.health_donate.health.enumT.RequestStatus;
+import com.health_donate.health.repository.DonationRequestRepository;
 import com.health_donate.health.service.DonationRequestService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,41 @@ import java.util.List;
 public class DonationRequestController {
 
     private DonationRequestService donationRequestService;
+    private DonationRequestRepository donationRequestRepository;
+
+
+
+    @GetMapping("/requester/{requesterId}/approuve")
+    public List<DonationRequestDTO> getRequestsByRequesterAndStatus(
+            @PathVariable Long requesterId
+           ) {
+        return donationRequestService.getRequestsByRequesterAndStatus(requesterId);
+    }
+
+    @GetMapping("/requester/{requesterId}/approuve-pagine")
+    public Page<DonationRequestDTO> getRequestsByRequesterAndStatus(
+            @PathVariable Long requesterId,
+
+            @RequestParam(defaultValue = "0") int page) {
+        return donationRequestService.getRequestsByRequesterAndStatus(requesterId, page);
+    }
+
+
+    @GetMapping(path = "countDonRecuByUser/{donorId}")
+    public ResponseEntity<ApiResponse<?>> getAssociationCounrrByUser(
+            @PathVariable Long donorId
+
+
+    ){
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.OK.value()),
+                        HttpStatus.OK.getReasonPhrase(),
+                        donationRequestRepository.countByRequester_IdAndStatus(donorId, RequestStatus.APPROVED )
+                ));
+
+    }
 
     @PostMapping("/")
     public ResponseEntity<ApiResponse<DonationRequestDTO>> createDonation(@RequestPart("demandeDon") DonationRequestDTO dto) {

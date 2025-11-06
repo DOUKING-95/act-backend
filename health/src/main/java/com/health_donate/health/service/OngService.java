@@ -9,6 +9,9 @@ import com.health_donate.health.repository.OngRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,23 +43,31 @@ public class OngService {
         return ongOpt.map(OngMapper::toDTO).orElse(null);
     }
 
-    public OngDTO createOng(OngDTO dto, MultipartFile logoFile) throws IOException {
+    public OngDTO createOng(OngDTO dto, MultipartFile profilFile, MultipartFile coverFile) throws IOException {
         Ong ong = OngMapper.toEntity(dto);
 
-        if (logoFile != null && !logoFile.isEmpty()) {
-            String logoPath = fileStorageService.storeFile(logoFile);
-            ong.setLogoUrl(logoPath);
+        //  Enregistrement de l’image de profil
+        if (profilFile != null && !profilFile.isEmpty()) {
+            String profilPath = fileStorageService.storeFile(profilFile);
+            ong.setProfilUrl(profilPath);
+        }
+
+        //  Enregistrement de l’image de couverture
+        if (coverFile != null && !coverFile.isEmpty()) {
+            String coverPath = fileStorageService.storeFile(coverFile);
+            ong.setCoverUrl(coverPath);
         }
 
         Ong saved = ongRepository.save(ong);
         return OngMapper.toDTO(saved);
     }
 
-    public OngDTO updateOng(Long id, OngDTO dto, MultipartFile logoFile) throws IOException {
+
+    public OngDTO updateOng(Long id, OngDTO dto, MultipartFile logoFile, MultipartFile coverFile) throws IOException {
         Ong ong = ongRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ong introuvable avec id : " + id));
 
-        // mise à jour des champs
+        // Mise à jour des champs
         ong.setNom(dto.getNom());
         ong.setTypeOrganisation(dto.getTypeOrganisation());
         ong.setDescriptionMission(dto.getDescriptionMission());
@@ -77,13 +88,29 @@ public class OngService {
         ong.setConfirmationOfficielle(dto.isConfirmationOfficielle());
         ong.setEstActif(dto.isEstActif());
 
+        // Mise à jour du logo
         if (logoFile != null && !logoFile.isEmpty()) {
             String logoPath = fileStorageService.storeFile(logoFile);
-            ong.setLogoUrl(logoPath);
+            ong.setProfilUrl(logoPath);
+        }
+
+        // Mise à jour de la couverture
+        if (coverFile != null && !coverFile.isEmpty()) {
+            String coverPath = fileStorageService.storeFile(coverFile);
+            ong.setCoverUrl(coverPath);
         }
 
         Ong updated = ongRepository.save(ong);
         return OngMapper.toDTO(updated);
+    }
+    public Page<OngDTO> getAllOngsPaged(int page) {
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Ong> ongsPage = ongRepository.findAll(pageRequest);
+
+
+        return ongsPage.map(OngMapper::toDTO);
     }
 
     public boolean deleteOng(Long id) {

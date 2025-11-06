@@ -26,7 +26,8 @@ public class Ong {
     @Column(columnDefinition = "TEXT")
     private String descriptionMission;
 
-    private String logoUrl;
+    private String profilUrl;
+    private String coverUrl;
 
     // Coordonnées
     private String emailContact;

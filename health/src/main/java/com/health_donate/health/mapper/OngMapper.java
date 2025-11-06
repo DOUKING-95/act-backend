@@ -13,7 +13,8 @@ public class OngMapper {
                 .nom(ong.getNom())
                 .typeOrganisation(ong.getTypeOrganisation())
                 .descriptionMission(ong.getDescriptionMission())
-                .logoUrl(ong.getLogoUrl())
+                .profilUrl(ong.getProfilUrl())
+                .coverUrl(ong.getCoverUrl())
 
                 .emailContact(ong.getEmailContact())
                 .telephoneContact(ong.getTelephoneContact())
@@ -43,7 +44,8 @@ public class OngMapper {
                 .nom(dto.getNom())
                 .typeOrganisation(dto.getTypeOrganisation())
                 .descriptionMission(dto.getDescriptionMission())
-                .logoUrl(dto.getLogoUrl())
+                .profilUrl(dto.getProfilUrl())
+                .coverUrl(dto.getCoverUrl())
 
                 .emailContact(dto.getEmailContact())
                 .telephoneContact(dto.getTelephoneContact())
