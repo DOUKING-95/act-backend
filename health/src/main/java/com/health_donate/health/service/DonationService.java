@@ -3,6 +3,7 @@ package com.health_donate.health.service;
 
 
 import com.health_donate.health.dto.DonationDTO;
+import com.health_donate.health.dto.TopDonorDTO;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.Donation;
 import com.health_donate.health.entity.Image;
@@ -146,6 +147,17 @@ public class DonationService {
         updatedDonation = donationRepository.save(updatedDonation);
 
         return DonationMapper.toDTO(updatedDonation);
+    }
+
+
+    public List<TopDonorDTO> getTop15Donors() {
+        List<Object[]> results = donationRepository.findTop15Donors();
+        return results.stream()
+                .map(obj -> new TopDonorDTO(
+                        ((Number) obj[0]).longValue(),
+                        ((Number) obj[1]).longValue()))
+                .limit(15)
+                .toList();
     }
 
 

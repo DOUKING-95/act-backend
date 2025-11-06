@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
 //                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**","/uploads/**").permitAll()
+                        auth.requestMatchers("/auth/**","/uploads/**","/ws/**", "/app/**", "/topic/**").permitAll()
 
                                 .anyRequest().authenticated())
 

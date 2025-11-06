@@ -1,5 +1,5 @@
 package com.health_donate.health.enumT;
 
 public enum DonationCategory {
-    AUTRES, EQUIPMENT
+    AUTRES, EQUIPEMENT, MOBILITE, HYGIENE, PREMIER_SOIN
 }

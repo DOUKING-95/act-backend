@@ -4,6 +4,7 @@ package com.health_donate.health.controller;
 import com.google.zxing.WriterException;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.ParticipationDTO;
+import com.health_donate.health.dto.TopParticipantDTO;
 import com.health_donate.health.repository.ParticipationRepository;
 import com.health_donate.health.service.ParticipationService;
 import jakarta.validation.Valid;
@@ -109,6 +110,11 @@ public class ParticipationController {
     ) {
         ParticipationDTO dto = participationService.enregistrerPresence(actorId, code);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/top-participants")
+    public ResponseEntity<List<TopParticipantDTO>> getTopParticipants() {
+        return ResponseEntity.ok(participationService.getTop15Participants());
     }
 }
 

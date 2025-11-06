@@ -7,6 +7,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.health_donate.health.dto.ParticipationDTO;
+import com.health_donate.health.dto.TopParticipantDTO;
 import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.Participation;
 import com.health_donate.health.entity.SocialAction;
@@ -33,11 +34,7 @@ public class ParticipationService {
 
 
     private ParticipationRepository participationRepository;
-
-
     private SocialActionRepository socialActionRepository;
-
-
     private ActorRepository actorRepository;
 
 
@@ -179,6 +176,17 @@ public class ParticipationService {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         return sb.toString();
+    }
+
+    public List<TopParticipantDTO> getTop15Participants() {
+        List<Object[]> results = participationRepository.findTopActorsByParticipation();
+
+        return results.stream()
+                .map(obj -> new TopParticipantDTO(
+                        ((Number) obj[0]).longValue(),
+                        ((Number) obj[1]).longValue()))
+                .limit(15)
+                .toList();
     }
 
     /**

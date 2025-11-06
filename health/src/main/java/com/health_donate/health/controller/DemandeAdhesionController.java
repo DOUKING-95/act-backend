@@ -31,13 +31,21 @@ public class DemandeAdhesionController {
     public ResponseEntity<List<DemandeAdhesionDTO>> demandesEnAttente(@PathVariable Long associationId) {
         return ResponseEntity.ok(demandeAdhesionService.demandesEnAttente(associationId));
     }
+    @GetMapping("/accepter/{associationId}")
+    public ResponseEntity<List<DemandeAdhesionDTO>> demandesAccepter(@PathVariable Long associationId) {
+        return ResponseEntity.ok(demandeAdhesionService.demandesAccepter(associationId));
+    }
+    @GetMapping("/rejeter/{associationId}")
+    public ResponseEntity<List<DemandeAdhesionDTO>> demandesRejeter(@PathVariable Long associationId) {
+        return ResponseEntity.ok(demandeAdhesionService.demandesRejeter(associationId));
+    }
 
-    @PutMapping("/accepter/{demandeId}")
+    @PostMapping("/accepter/{demandeId}")
     public ResponseEntity<DemandeAdhesionDTO> accepter(@PathVariable Long demandeId) {
         return ResponseEntity.ok(demandeAdhesionService.accepterDemande(demandeId));
     }
 
-    @PutMapping("/rejeter/{demandeId}")
+    @PostMapping("/rejeter/{demandeId}")
     public ResponseEntity<DemandeAdhesionDTO> rejeter(@PathVariable Long demandeId) {
         return ResponseEntity.ok(demandeAdhesionService.rejeterDemande(demandeId));
     }

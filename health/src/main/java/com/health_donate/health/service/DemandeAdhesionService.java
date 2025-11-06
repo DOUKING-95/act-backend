@@ -56,6 +56,19 @@ public class DemandeAdhesionService {
         return demandes.stream().map(DemandeAdhesionMapper::toDTO).collect(Collectors.toList());
     }
 
+    public List<DemandeAdhesionDTO> demandesAccepter(Long associationId) {
+        Association association = associationRepository.findById(associationId)
+                .orElseThrow(() -> new EntityNotFoundException("Association introuvable"));
+        List<DemandeAdhesion> demandes = demandeAdhesionRepository.findByAssociationAndStatut(association, StatutDemande.ACCEPTEE);
+        return demandes.stream().map(DemandeAdhesionMapper::toDTO).collect(Collectors.toList());
+    }
+    public List<DemandeAdhesionDTO> demandesRejeter(Long associationId) {
+        Association association = associationRepository.findById(associationId)
+                .orElseThrow(() -> new EntityNotFoundException("Association introuvable"));
+        List<DemandeAdhesion> demandes = demandeAdhesionRepository.findByAssociationAndStatut(association, StatutDemande.REJETEE);
+        return demandes.stream().map(DemandeAdhesionMapper::toDTO).collect(Collectors.toList());
+    }
+
     //Accepter une demande
     public DemandeAdhesionDTO accepterDemande(Long demandeId) {
         DemandeAdhesion demande = demandeAdhesionRepository.findById(demandeId)

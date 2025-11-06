@@ -3,6 +3,7 @@ package com.health_donate.health.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.health_donate.health.dto.ApiResponse;
 import com.health_donate.health.dto.DonationDTO;
+import com.health_donate.health.dto.TopDonorDTO;
 import com.health_donate.health.entity.Donation;
 import com.health_donate.health.enumT.DonationStatus;
 import com.health_donate.health.repository.DonationRepository;
@@ -40,9 +41,15 @@ public class DonationController {
                 new ApiResponse<>(
                         String.valueOf(HttpStatus.OK.value()),
                         HttpStatus.OK.getReasonPhrase(),
-                        donationRepository.countByDonorIdAndStatus(donorId, DonationStatus.AVAILABLE)
+                        donationRepository.countByDonorIdAndIsAvailable(donorId, DonationStatus.AVAILABLE)
                 ));
 
+    }
+
+
+    @GetMapping("/top-donors")
+    public ResponseEntity<List<TopDonorDTO>> getTopDonors() {
+        return ResponseEntity.ok(donationService.getTop15Donors());
     }
 
     @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
