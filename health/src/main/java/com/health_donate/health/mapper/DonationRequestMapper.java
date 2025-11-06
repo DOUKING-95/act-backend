@@ -6,6 +6,11 @@ import com.health_donate.health.dto.DonationRequestDTO;
 import com.health_donate.health.entity.DonationRequest;
 import com.health_donate.health.entity.Donation;
 import com.health_donate.health.entity.User;
+import com.health_donate.health.repository.DonationRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 public class DonationRequestMapper {
 
@@ -24,6 +29,8 @@ public class DonationRequestMapper {
 
         if (request.getRequester() != null) {
             dto.setRequesterId(request.getRequester().getId());
+            dto.setName(request.getRequester().getName());
+            dto.setType(request.getRequester().getAuthorities().toString());
         }
 
         return dto;
@@ -39,6 +46,7 @@ public class DonationRequestMapper {
         request.setCreatedAt(dto.getCreatedAt());
 
         if (dto.getDonationId() != null) {
+
             Donation donation = new Donation();
             donation.setId(dto.getDonationId());
             request.setDonation(donation);

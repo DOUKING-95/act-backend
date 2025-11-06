@@ -45,6 +45,19 @@ public class Donation {
     private  boolean published;
     private LocalDateTime createdAt ;
 
+    @Column(length = 1000)
+    private String descriptionCourte;
+
+    @Column(length = 4000)
+    private String descriptionComplete;
+
+    private String etat;
+
+    private String typeDon;
+
+    @Column(length = 1000)
+    private String raisonDeclin;
+
 
     @ManyToOne
     @JoinColumn(name = "donor_id")

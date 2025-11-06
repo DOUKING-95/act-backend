@@ -20,14 +20,10 @@ import java.util.List;
 public class MembreDTO {
 
     private Long id;
-
     private Boolean actif;
 
-    private AssociationDTO associations;
-
-    private Association association;
-
-    private User user;
-
+    private AssociationDTO association;
+    private Long userId;
+    private String userName;
     private List<ReceptionDTO> receptions;
 }

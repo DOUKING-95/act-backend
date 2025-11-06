@@ -60,8 +60,4 @@ public class AssociationDTO {
 
     private List<Long> benevolesIds;
     private List<Long> socialActionIds;
-
-    public boolean getActive() {
-        return  this.active;
-    }
 }

@@ -64,6 +64,7 @@ public class SocialActionService {
         action.getImages().clear();
         action.getImages().addAll(savedImages);
 
+        savedAction.updateImages(savedImages);
         socialActionRepository.save(savedAction);
 
         return SocialActionMapper.toDTO(savedAction);
