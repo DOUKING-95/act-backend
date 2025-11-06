@@ -1,6 +1,7 @@
 package com.health_donate.health.service;
 
 import com.health_donate.health.dto.DonationRequestDTO;
+import com.health_donate.health.entity.Donation;
 import com.health_donate.health.entity.DonationRequest;
 import com.health_donate.health.enumT.RequestStatus;
 import com.health_donate.health.entity.User;

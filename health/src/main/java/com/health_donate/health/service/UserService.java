@@ -29,8 +29,6 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
-    private UserRepository userRepository;
     private ActorRepository actorRepository;
 
     public User save(User user) {
