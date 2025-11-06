@@ -1,54 +1,86 @@
 package com.health_donate.health.service;
 
-import com.health_donate.health.dto.*;
-import com.health_donate.health.repository.AssociationRepository;
-import com.health_donate.health.repository.DonationRepository;
-import com.health_donate.health.repository.OngRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.health_donate.health.dto.dashboard.*;
+import com.health_donate.health.enumT.StatutAsso;
+import com.health_donate.health.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.format.DateTimeFormatter;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
 
-    @Autowired
-    private AssociationRepository associationRepo;
-    @Autowired private OngRepository organisationRepo;
-    @Autowired private DonationRepository donRepo;
-//    @Autowired private ActiviteRepository activiteRepo;
+    private final AssociationRepository associationRepository;
+    private final OngRepository ongRepository;
+    private final DonationRepository donationRepository;
+    private final SocialActionRepository socialActionRepository;
 
-    //Récupération des données globales
-    public DashboardSummaryDto getSummaryData() {
-        return new DashboardSummaryDto(
-                associationRepo.count(),
-                organisationRepo.count(),
-                donRepo.count(),
-                0
-        );
-    }
 
-    //Récupération des données pour les graphiques
-    public DashboardChartDataDto getChartData() {
 
-        return new DashboardChartDataDto(null,null);
-    }
+    public DashboardDTO getDashboardData() {
+        DashboardDTO dto = new DashboardDTO();
 
-    //Récupération des activités récentes
-    public List<RecentActivityDto> getRecentActivity() {
-        return List.of(
-                new RecentActivityDto("Nouvelle association", "Association Santé Pour Tous", "Il y a 23 minutes"),
-                new RecentActivityDto("Don enregistré", "10 fauteuils roulants", "Il y a 2 heures")
-                // ... autres données du repo
-        );
-    }
+        // Comptages simples
+        dto.setTotalAssociations(associationRepository.count());
+        dto.setTotalOngs(ongRepository.count());
+        dto.setTotalDonations(donationRepository.count());
+        dto.setTotalSocialActions(socialActionRepository.count());
 
-    //Récupération des approbations en attente
-    public List<ApprovalDto> getPendingApprovals() {
-        return associationRepo.findByStatut("EN_ATTENTE").stream()
-                .map(assoc -> new ApprovalDto(assoc.getId(), assoc.getNomComplet(), "Association"))
-                .collect(Collectors.toList());
+        // Actions par mois
+        Map<String, Long> actionsPerMonth = socialActionRepository.findActionsPerMonth()
+                .stream()
+                .filter(entry -> entry.getMonth() != null) // filtre les null
+                .collect(Collectors.toMap(
+                        SocialActionRepository.MonthCount::getMonth,
+                        SocialActionRepository.MonthCount::getCount
+                ));
+        dto.setActionsPerMonth(actionsPerMonth);
 
+        // Actions par type
+        Map<String, Long> actionsPerType = socialActionRepository.findActionsPerType()
+                .stream()
+                .filter(entry -> entry.getType() != null)
+                .collect(Collectors.toMap(
+                        SocialActionRepository.TypeCount::getType,
+                        SocialActionRepository.TypeCount::getCount
+                ));
+        dto.setActionsPerType(actionsPerType);
+
+        // Dernières actions sociales
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<DashboardDTO.SocialActionDashboardDTO> latestActions =
+                socialActionRepository.findLatestActions()
+                        .stream()
+                        .map(sa -> new DashboardDTO.SocialActionDashboardDTO(
+                                sa.getId(),
+                                sa.getTitre(),
+                                sa.getLieu(),
+                                sa.getDescription(),
+                                sa.isPassed(),
+                                sa.getDate() != null ? sa.getDate().format(formatter) : "N/A",
+                                sa.getType(),
+                                sa.getBenevolNumber(),
+                                sa.getAssociation() != null ? sa.getAssociation().getName() : "N/A"
+                        ))
+                        .collect(Collectors.toList());
+
+        dto.setLatestSocialActions(latestActions);
+
+        List<DashboardDTO.PendingApprovalDTO> pendinApproval  = associationRepository.findTop3ByStatut(StatutAsso.En_attente)
+                .stream()
+                .map(sa -> new DashboardDTO.PendingApprovalDTO(
+                        sa.getId(),
+                        sa.getName(),
+                        sa.getDateCreation()!= null ? sa.getDateCreation().toString() : "N/A"
+                ))
+                .toList();
+
+        dto.setPendingApproval(pendinApproval);
+
+        return dto;
     }
 }

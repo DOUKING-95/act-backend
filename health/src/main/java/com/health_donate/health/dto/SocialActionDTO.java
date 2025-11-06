@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -20,6 +21,8 @@ public class SocialActionDTO {
     private String description;
     private List<Long> imageIds;
     private boolean passed;
+    private LocalDate date;
+    private String type;
     private int benevolNumber;
     private List<Long> participationIds;
 }

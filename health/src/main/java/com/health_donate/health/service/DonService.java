@@ -1,20 +1,18 @@
 package com.health_donate.health.service;
 
 import com.health_donate.health.dto.DTOAdmin.DonDTO;
-import com.health_donate.health.entity.Actor;
-import com.health_donate.health.entity.Donation;
-import com.health_donate.health.entity.Image;
+import com.health_donate.health.entity.*;
+import com.health_donate.health.enumT.Destinataire;
 import com.health_donate.health.enumT.DonationStatus;
 import com.health_donate.health.mapper.DonMapper;
-import com.health_donate.health.repository.ActorRepository;
-import com.health_donate.health.repository.DonationRepository;
-import com.health_donate.health.repository.ImageRepository;
+import com.health_donate.health.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +25,10 @@ public class DonService {
     private final ActorRepository actorRepository;
     private final ImageRepository imageRepository;
     private final FileStorageService fileStorageService;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final ReceptionRepository receptionRepository;
+
 
     // --- CREATE ---
     public DonDTO createDonationWithImages(DonDTO dto, MultipartFile[] images) throws IOException {
@@ -91,7 +93,7 @@ public class DonService {
     public DonDTO publishDonation(Long id) {
         Donation donation = donationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Don introuvable"));
-        donation.setPublished(true);
+        donation.setIsAvailable(DonationStatus.PUBLIE);
         donationRepository.save(donation);
         return DonMapper.toDTO(donation);
     }
@@ -101,10 +103,21 @@ public class DonService {
         Donation donation = donationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Don introuvable"));
         donation.setRaisonDeclin(reason);
-        donation.setIsAvailable(DonationStatus.UNAVAILABLE);
+        donation.setIsAvailable(DonationStatus.DECLINE);
         donationRepository.save(donation);
         return DonMapper.toDTO(donation);
     }
+
+    //Revoquer un don avec raison
+    public DonDTO revoqueDonation(Long id, String reason) {
+        Donation donation = donationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Don introuvable"));
+        donation.setRaisonDeclin(reason);
+        donation.setIsAvailable(DonationStatus.EN_ATTENTE);
+        donationRepository.save(donation);
+        return DonMapper.toDTO(donation);
+    }
+
 
     //Attribuer et marquer comme livré
     public DonDTO assignAndDeliverDonation(Long id, Long beneficiaryId) {
@@ -132,10 +145,37 @@ public class DonService {
     }
 
     //Notifier (placeholder pour email/SMS)
-    public void notifyDonation(Long id) {
+    public DonDTO notifyDonation(Long id,String message,Long donorID) {
         Donation donation = donationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Don introuvable"));
+        User donor = userRepository.findById(donorID)
+                .orElseThrow(() -> new EntityNotFoundException("donateur introuvable"));
+
+        Notification notif = new Notification(
+                null,
+                "Alerte de recuperation de don",
+                "Alerte",
+                message,
+                Destinataire.benevoles,
+                LocalDate.now().atStartOfDay(),
+                null
+        );
+        notificationRepository.save(notif);
+        Reception reception = new Reception(
+                null,
+                false,
+                null,
+                null,
+                notif,
+                donor
+        );
+        receptionRepository.save(reception);
+
+        //La logique pour l'envoie a travers mail et sms:
+
+
         System.out.println("Notification envoyée pour le don : " + donation.getTitle());
+        return DonMapper.toDTO(donation);
     }
 
 

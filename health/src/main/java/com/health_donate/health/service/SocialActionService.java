@@ -51,7 +51,7 @@ public class SocialActionService {
             }
         }
 
-        savedAction.setImages(savedImages);
+        savedAction.updateImages(savedImages);
         socialActionRepository.save(savedAction);
 
         return SocialActionMapper.toDTO(savedAction);

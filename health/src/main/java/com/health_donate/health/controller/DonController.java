@@ -81,23 +81,34 @@ public class DonController {
 
 
     //Publier un don
-    @PutMapping("/{id}/publish")
+    @PutMapping("/statut/{id}/Publie")
     public ResponseEntity<DonDTO> publishDonation(@PathVariable Long id) {
         DonDTO updated = donationService.publishDonation(id);
         return ResponseEntity.ok(updated);
     }
 
     //Décliner un don avec une raison
-    @PutMapping("/{id}/decline")
+    @PutMapping("/statut/{id}/Decline")
     public ResponseEntity<DonDTO> declineDonation(
             @PathVariable Long id,
-            @RequestParam("reason") String reason) {
+            @RequestParam("raison") String reason) {
+
         DonDTO updated = donationService.declineDonation(id, reason);
         return ResponseEntity.ok(updated);
     }
 
+    //Revoque un don avec une raison
+    @PutMapping("/statut/{id}/Revoque")
+    public ResponseEntity<DonDTO> revoqueDonation(
+            @PathVariable Long id,
+            @RequestParam("raison") String reason) {
+
+        DonDTO updated = donationService.revoqueDonation(id, reason);
+        return ResponseEntity.ok(updated);
+    }
+
     //Attribuer un don à un bénéficiaire et marquer comme livré
-    @PutMapping("/{id}/assign")
+    @PutMapping("/statut/{id}/assign")
     public ResponseEntity<DonDTO> assignAndDeliverDonation(
             @PathVariable Long id,
             @RequestParam("beneficiaryId") Long beneficiaryId) {
@@ -106,7 +117,7 @@ public class DonController {
     }
 
     //Modifier une attribution (changer bénéficiaire ou statut)
-    @PutMapping("/{id}/reassign")
+    @PutMapping("/statut/{id}/reassign")
     public ResponseEntity<DonDTO> modifyAssignment(
             @PathVariable Long id,
             @RequestParam("newBeneficiaryId") Long newBeneficiaryId) {
@@ -115,10 +126,11 @@ public class DonController {
     }
 
     //Notifier le donateur ou bénéficiaire (placeholder)
-    @PostMapping("/{id}/notify")
-    public ResponseEntity<String> notifyDonation(@PathVariable Long id) {
-        donationService.notifyDonation(id);
-        return ResponseEntity.ok("Notification envoyée avec succès !");
+    @PostMapping("/statut/{id}/Notifie/{donorID}")
+    public ResponseEntity<DonDTO> notifyDonation(@PathVariable Long id,@PathVariable Long donorID,
+                                                 @RequestParam("message") String message) {
+        ;
+        return ResponseEntity.ok(donationService.notifyDonation(id,message,donorID));
     }
 
 

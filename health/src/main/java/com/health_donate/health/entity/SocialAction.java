@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,9 +28,17 @@ public class SocialAction {
     private String description;
     private boolean passed;
     private int benevolNumber;
+    private LocalDate date;
+    private String type;
 
     @OneToMany(mappedBy = "socialAction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
+    public void updateImages(List<Image> newImages) {
+        this.images.clear();
+        if (newImages != null) {
+            this.images.addAll(newImages);
+        }
+    }
 
     @OneToMany(mappedBy = "activite", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();

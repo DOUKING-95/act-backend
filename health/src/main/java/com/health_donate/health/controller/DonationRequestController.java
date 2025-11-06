@@ -56,7 +56,7 @@ public class DonationRequestController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<DonationRequestDTO>> updateDonationRequest(
             @PathVariable Long id,
-            @RequestPart Boolean accept
+            @RequestPart("accept") Boolean accept
     ) {
         DonationRequestDTO updated = donationRequestService.updateDonationRequest(id, accept);
         if (updated == null) {
