@@ -22,6 +22,7 @@ public class DonationMapper {
         dto.setLocation(donation.getLocation());
         dto.setUrgent(donation.isUrgent());
         dto.setPublished(donation.isPublished());
+        dto.setDateCreated(donation.getCreatedAt());
 
         dto.setDonorId(donation.getDonor() != null ? donation.getDonor().getId() : null);
         dto.setCategory(donation.getCategory() != null ? donation.getCategory() : null);
