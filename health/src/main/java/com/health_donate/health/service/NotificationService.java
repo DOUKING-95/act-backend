@@ -7,10 +7,13 @@ import com.health_donate.health.mapper.NotificationMapper;
 import com.health_donate.health.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +36,8 @@ public class NotificationService {
     private UserRepository userRepository;
     @Autowired
     private NotificationMapper notificationMapper;
+
+    private SimpMessagingTemplate messagingTemplate;
 
 
     // GET BY ID
@@ -63,6 +68,11 @@ public class NotificationService {
     public Notification createNotification(NotificationDTO dto) {
         Notification notif = notificationMapper.toEntity(dto);
         notificationRepository.save(notif);
+
+        Map<String, String> notifData = new HashMap<>();
+        notifData.put("title", dto.getTitre());
+        notifData.put("description", dto.getContenu());
+
 //        Notification saved = notificationRepository.save(notif);
 
         switch (dto.getDestinataires().toString().toLowerCase()) {
@@ -72,6 +82,7 @@ public class NotificationService {
                     break;
                 }
                 ongList.forEach(ong -> {
+                    messagingTemplate.convertAndSend("/topic/notifications", notifData);
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
@@ -88,6 +99,7 @@ public class NotificationService {
                 }
                 membres.forEach(membre -> {
                     if (users.contains(membre.getUser())) {
+                        messagingTemplate.convertAndSend("/topic/notifications", notifData);
                         Reception reception = new Reception();
                         reception.setNotification(notif);
                         reception.setEstLu(false);
@@ -105,6 +117,7 @@ public class NotificationService {
                 }
                 membreList.forEach(membre -> {
                     if (associations.contains(membre.getAssociation())) {
+                        messagingTemplate.convertAndSend("/topic/notifications", notifData);
                         Reception reception = new Reception();
                         reception.setNotification(notif);
                         reception.setEstLu(false);
@@ -135,6 +148,7 @@ public class NotificationService {
                     break;
                 }
                 allMembres.forEach(membre -> {
+                    messagingTemplate.convertAndSend("/topic/notifications", notifData);
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
