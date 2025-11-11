@@ -27,7 +27,7 @@ public class ReceptionMapper {
         Reception entity = new Reception();
         entity.setId(dto.getId());
         entity.setEstLu(dto.getEstLu());
-        entity.setMembre(MembreMapper.toEntity(dto.getMembre()));
+        entity.setMembre(MembreMapper.toEntity(dto.getMembre(),null,null));
         entity.setOng(OngMapper.toEntity(dto.getOng()));
         return entity;
     }

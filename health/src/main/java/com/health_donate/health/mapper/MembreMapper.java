@@ -1,7 +1,10 @@
 package com.health_donate.health.mapper;
 
 import com.health_donate.health.dto.MembreDTO;
+import com.health_donate.health.dto.ReceptionDTO;
+import com.health_donate.health.entity.Association;
 import com.health_donate.health.entity.Membre;
+import com.health_donate.health.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +20,18 @@ public class MembreMapper {
         MembreDTO dto = new MembreDTO();
         dto.setId(entity.getId());
         dto.setActif(entity.isActif());
-        dto.setAssociations(AssociationMapper.toDTO(entity.getAssociation()));
-        dto.setUser(entity.getUser());
+        dto.setAssociation(AssociationMapper.toDTO(entity.getAssociation()));
+
+        if (entity.getUser() != null) {
+            dto.setUserId(entity.getUser().getId());
+            dto.setUserName(entity.getUser().getName());
+        }
 
         if (entity.getReceptions() != null) {
             dto.setReceptions(
                     entity.getReceptions().stream()
                             .map(reception -> {
-                                var rDto = new com.health_donate.health.dto.ReceptionDTO();
+                                ReceptionDTO rDto = new ReceptionDTO();
                                 rDto.setId(reception.getId());
                                 rDto.setEstLu(reception.getEstLu());
                                 return rDto;
@@ -36,14 +43,15 @@ public class MembreMapper {
         return dto;
     }
 
-    public static Membre toEntity(MembreDTO dto) {
+    public static Membre toEntity(MembreDTO dto, User user, Association association) {
         if (dto == null) return null;
 
         Membre entity = new Membre();
         entity.setId(dto.getId());
         entity.setActif(dto.getActif());
-        entity.setAssociation(AssociationMapper.toEntity(dto.getAssociations()));
-        entity.setUser(dto.getUser());
+        entity.setUser(user);
+        entity.setAssociation(association);
+
         return entity;
     }
 }
