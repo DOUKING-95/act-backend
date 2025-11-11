@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("ong")
+@RequestMapping("auth/ong/")
 @RequiredArgsConstructor
 public class OngController {
 
@@ -33,7 +33,7 @@ public class OngController {
         return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/all")
+    @GetMapping("all")
     public Page<OngDTO> getAllOngsPaged(@RequestParam(defaultValue = "0") int page) {
         return ongService.getAllOngsPaged(page);
     }
