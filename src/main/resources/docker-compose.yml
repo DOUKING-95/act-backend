@@ -1,0 +1,31 @@
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: act_db
+      MYSQL_USER: act_user
+      MYSQL_PASSWORD: act_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+  smtp4dev:
+      image: rnwood/smtp4dev:v3
+      restart: always
+      ports:
+        # Change the number before : to the port the web interface should be accessible on
+        # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
+        - '8081:80'
+        # Change the number before : to the port the SMTP server should be accessible on
+        # Add 127.0.0.1: prefix for localhost-only access (recommended for security)
+        - '9025:25'
+        # Change the number before : to the port the IMAP server should be accessible on
+
+
+volumes:
+    db_data:
+
