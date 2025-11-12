@@ -1,4 +1,4 @@
-Build du projet avec maven et eclipse-temurin
+#Build du projet avec maven et eclipse-temurin
 FROM maven:3.9.11-eclipse-temurin-21 AS build
 
 WORKDIR /app
@@ -20,8 +20,8 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 # Copier le jar depuis l'étape de build
-COPY --from=build /app/target/*.jar globalShopper.jar
+COPY --from=build /app/target/*.jar act-backend.jar
 # Exposer le port sur lequel l'application va tourner
 EXPOSE 8085
 # Lancer l'application en prenant en compte la variable PORT
-ENTRYPOINT ["java", "-jar", "globalShopper.jar"]
+ENTRYPOINT ["java", "-jar", "act-backend.jar"]
