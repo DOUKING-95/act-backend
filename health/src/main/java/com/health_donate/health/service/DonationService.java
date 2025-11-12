@@ -80,7 +80,7 @@ public class DonationService {
 
     // --- GET ALL ---
     public List<DonationDTO> getAllDonations() {
-        List<Donation> donations = donationRepository.findAll();
+        List<Donation> donations = donationRepository.findByUrgent(true);
         return donations.stream()
                 .map(DonationMapper::toDTO)
                 .collect(Collectors.toList());
@@ -100,7 +100,7 @@ public class DonationService {
         int size = 5;
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<Donation> donationsPage = donationRepository.findAll(pageRequest);
+        Page<Donation> donationsPage = donationRepository.findAllByIsAvailable(DonationStatus.PUBLIE,pageRequest);
 
 
         return donationsPage.map(DonationMapper::toDTO);
@@ -113,7 +113,7 @@ public class DonationService {
         Donation donation = donationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Donation introuvable pour l'id " + id));
 
-        // 🔹 Mettre à jour les champs
+        //  Mettre à jour les champs
         donation.setTitle(dto.getTitle());
         donation.setDescription(dto.getDescription());
         donation.setCategory(dto.getCategory());

@@ -14,12 +14,16 @@ import java.util.List;
 public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<Donation> findByUrgentTrue();
     List<Donation> findByDonorId(Long donorId);
+    List<Donation> findByUrgent( boolean urgent);
 
 
         List<Donation> findTop4ByOrderByIdDesc();
 
     Page<Donation> findByDonorId(Long donorId, Pageable pageable);
     Page<Donation> findAll(Pageable pageable);
+
+    Page<Donation> findAllByIsAvailable(DonationStatus isAvailable, Pageable pageable);
+
 
     long countByDonorIdAndIsAvailable(Long donorId, DonationStatus isAvailable);
 

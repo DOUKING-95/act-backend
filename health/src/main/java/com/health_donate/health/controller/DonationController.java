@@ -41,7 +41,7 @@ public class DonationController {
                 new ApiResponse<>(
                         String.valueOf(HttpStatus.OK.value()),
                         HttpStatus.OK.getReasonPhrase(),
-                        donationRepository.countByDonorIdAndIsAvailable(donorId, DonationStatus.AVAILABLE)
+                        donationRepository.countByDonorIdAndIsAvailable(donorId, DonationStatus.PUBLIE)
                 ));
 
     }

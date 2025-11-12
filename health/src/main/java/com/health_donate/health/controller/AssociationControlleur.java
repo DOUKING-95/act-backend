@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("auth/associations/")
+@RequestMapping("/associations")
 @RequiredArgsConstructor
 public class AssociationControlleur {
 
