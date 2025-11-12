@@ -6,7 +6,9 @@ import com.health_donate.health.entity.*;
 import com.health_donate.health.mapper.NotificationMapper;
 import com.health_donate.health.repository.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class NotificationService {
 
     @Autowired
@@ -33,6 +36,8 @@ public class NotificationService {
     private UserRepository userRepository;
     @Autowired
     private NotificationMapper notificationMapper;
+
+    private SimpMessagingTemplate messagingTemplate;
 
 
     // GET BY ID
@@ -62,7 +67,9 @@ public class NotificationService {
     @Transactional
     public Notification createNotification(NotificationDTO dto) {
         Notification notif = notificationMapper.toEntity(dto);
+
         notificationRepository.save(notif);
+
 //        Notification saved = notificationRepository.save(notif);
 
         switch (dto.getDestinataires().toString().toLowerCase()) {
@@ -72,6 +79,7 @@ public class NotificationService {
                     break;
                 }
                 ongList.forEach(ong -> {
+                    messagingTemplate.convertAndSendToUser(ong.getNom(),"/",notif.getContenu());
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
@@ -88,6 +96,7 @@ public class NotificationService {
                 }
                 membres.forEach(membre -> {
                     if (users.contains(membre.getUser())) {
+
                         Reception reception = new Reception();
                         reception.setNotification(notif);
                         reception.setEstLu(false);
@@ -115,31 +124,31 @@ public class NotificationService {
             }
 
             case "tous" -> {
-                List<Ong> allOngs = ongRepository.findAll();
-                List<Membre> allMembres = membreRepository.findAll();
+//                List<Ong> allOngs = ongRepository.findAll();
+                List<User> allMembres = userRepository.findAll();
+                log.info("________________________________________________________________");
 
-                // ONG
-                if (allOngs.isEmpty()) {
-                    break;
-                }
-                allOngs.forEach(ong -> {
-                    Reception reception = new Reception();
-                    reception.setNotification(notif);
-                    reception.setEstLu(false);
-                    reception.setOng(ong);
-                    receptionRepository.save(reception);
-                });
+//                // ONG
+//                if (allOngs.isEmpty()) {
+//                    break;
+//                }
+//                allOngs.forEach(ong -> {
+//                    Reception reception = new Reception();
+//                    reception.setNotification(notif);
+//                    reception.setEstLu(false);
+//                    reception.setOng(ong);
+//                    receptionRepository.save(reception);
+//                    log.info("+++++++++++++++++++++++++++++++++++++++");
+//                });
 
-                // Membres
-                if (allMembres.isEmpty()) {
-                    break;
-                }
                 allMembres.forEach(membre -> {
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
-                    reception.setMembre(membre);
+                    reception.setMembre(null);
+                    reception.setUser(membre);
                     receptionRepository.save(reception);
+                    log.info("______________________________________________________________-_");
                 });
             }
 

@@ -10,9 +10,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Entite pour pour enregister les notifications sur DoNup
- * */
 @Entity
 @Getter
 @Setter

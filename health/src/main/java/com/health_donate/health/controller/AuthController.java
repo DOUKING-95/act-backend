@@ -20,7 +20,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -158,5 +161,81 @@ import java.util.Map;
                 )
         );
     }
+
+    //Create association etant admin:
+    @PostMapping("associations/create")
+    public ResponseEntity<ApiResponse<?>> create(
+            @RequestPart("contenu") AssociationDTO association,
+            @RequestPart(value = "profil", required = false) MultipartFile logo,
+            @RequestPart(value = "cover", required = false) MultipartFile coverFile
+    ) throws IOException {
+        AssociationDTO created = associationService.createAssociation(association,logo,coverFile);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        created
+                ));
     }
+
+    @PutMapping("associations/{id}")
+    public ResponseEntity<AssociationDTO> update(
+            @PathVariable Long id,
+            @RequestPart("contenu") AssociationDTO association,
+            @RequestPart(value = "profil", required = false) MultipartFile logo,
+            @RequestPart(value = "cover", required = false) MultipartFile coverFile
+    ) throws IOException {
+        return ResponseEntity.ok(associationService.updateAssociation(id, association, logo,coverFile));
+    }
+
+    //Pour changer l'etat d'une association :
+    @PutMapping("associations/statut/{id}")
+    public ResponseEntity<?> updateStatut(
+            @PathVariable Long id,
+            @RequestPart("statut") String motif
+    ){
+        return ResponseEntity.ok(associationService.updateStatut(id,motif));
+    }
+
+
+
+    //Pour la suppression d'une association :
+    @DeleteMapping("associations/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return associationService.deleteAssociation(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
+
+
+    @GetMapping("associations/list")
+    public ResponseEntity<ApiResponse<?>> allAssociation(){
+        List<AssociationDTO> associationDTOList = associationService.allAssociations();
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        associationDTOList
+                )
+        );
+    }
+
+
+    @GetMapping("associations/{id}")
+    public ResponseEntity<ApiResponse<?>> getAssoById(@PathVariable Long id) {
+        AssociationDTO associationDTO = associationService.getAssociationById(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        associationDTO
+                )
+        );
+    }
+
+
+}
 

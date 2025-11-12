@@ -24,7 +24,7 @@ public class DonationDTO {
     private String description;
     private DonationCategory category;
     private int quantity;
-    private DonationStatus isAvailable = DonationStatus.AVAILABLE;
+    private DonationStatus isAvailable = DonationStatus.EN_ATTENTE;
     private String location;
     private boolean urgent;
     private boolean published;

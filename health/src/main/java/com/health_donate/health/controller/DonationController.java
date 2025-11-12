@@ -41,7 +41,7 @@ public class DonationController {
                 new ApiResponse<>(
                         String.valueOf(HttpStatus.OK.value()),
                         HttpStatus.OK.getReasonPhrase(),
-                        donationRepository.countByDonorIdAndIsAvailable(donorId, DonationStatus.AVAILABLE)
+                        donationRepository.countByDonorIdAndIsAvailable(donorId, DonationStatus.EN_ATTENTE)
                 ));
 
     }
@@ -84,8 +84,6 @@ public class DonationController {
 
     }
 
-
-
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getAllDonations() {
         List<DonationDTO> donations = donationService.getAllDonations();
@@ -97,7 +95,6 @@ public class DonationController {
                 )
         );
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> getDonationById(@PathVariable Long id) {

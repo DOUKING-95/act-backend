@@ -67,7 +67,7 @@ public class DonService {
         // MàJ des champs
         donation.setTitle(dto.getTitle());
         donation.setDescriptionCourte(dto.getDescriptionCourte());
-        donation.setDescriptionComplete(dto.getDescriptionComplete());
+        donation.setDescriptionComplete(dto.getDescription());
         donation.setCategory(dto.getCategory());
         donation.setQuantity(dto.getQuantity());
         donation.setIsAvailable(dto.getIsAvailable());

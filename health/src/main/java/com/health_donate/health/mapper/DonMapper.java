@@ -17,7 +17,7 @@ public class DonMapper {
         dto.setId(donation.getId());
         dto.setTitle(donation.getTitle());
         dto.setDescriptionCourte(donation.getDescriptionCourte());
-        dto.setDescriptionComplete(donation.getDescriptionComplete());
+        dto.setDescription(donation.getDescription());
         dto.setCategory(donation.getCategory());
         dto.setQuantity(donation.getQuantity());
         dto.setIsAvailable(donation.getIsAvailable());
@@ -58,7 +58,7 @@ public class DonMapper {
         Donation donation = new Donation();
         donation.setTitle(dto.getTitle());
         donation.setDescriptionCourte(dto.getDescriptionCourte());
-        donation.setDescriptionComplete(dto.getDescriptionComplete());
+        donation.setDescription(dto.getDescription());
         donation.setCategory(dto.getCategory());
         donation.setQuantity(dto.getQuantity());
         donation.setIsAvailable(dto.getIsAvailable());
