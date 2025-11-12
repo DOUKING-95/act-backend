@@ -128,31 +128,29 @@ public class NotificationService {
             }
 
             case "tous" -> {
-                List<Ong> allOngs = ongRepository.findAll();
-                List<Membre> allMembres = membreRepository.findAll();
+//                List<Ong> allOngs = ongRepository.findAll();
+                List<User> allMembres = userRepository.findAll();
 
-                // ONG
-                if (allOngs.isEmpty()) {
-                    break;
-                }
-                allOngs.forEach(ong -> {
-                    Reception reception = new Reception();
-                    reception.setNotification(notif);
-                    reception.setEstLu(false);
-                    reception.setOng(ong);
-                    receptionRepository.save(reception);
-                });
+//                // ONG
+//                if (allOngs.isEmpty()) {
+//                    break;
+//                }
+//                allOngs.forEach(ong -> {
+//                    Reception reception = new Reception();
+//                    reception.setNotification(notif);
+//                    reception.setEstLu(false);
+//                    reception.setOng(ong);
+//                    receptionRepository.save(reception);
+//                    log.info("+++++++++++++++++++++++++++++++++++++++");
+//                });
 
-                // Membres
-                if (allMembres.isEmpty()) {
-                    break;
-                }
                 allMembres.forEach(membre -> {
                     messagingTemplate.convertAndSend("/topic/notifications", notifData);
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
-                    reception.setMembre(membre);
+                    reception.setMembre(null);
+                    reception.setUser(membre);
                     receptionRepository.save(reception);
                 });
             }

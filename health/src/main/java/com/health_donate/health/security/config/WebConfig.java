@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
         // Convertir en chemin absolu
         String absolutePath = System.getProperty("user.dir") + "/" + uploadDir.replace("./", "");
 
-        System.out.println(" [WebConfig] Dossier accessible publiquement : " + absolutePath);
+        System.out.println("[WebConfig] Dossier accessible publiquement : " + absolutePath);
 
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + absolutePath + "/");

@@ -21,7 +21,7 @@ public class DonDTO {
     private String title;
 
     private String descriptionCourte;
-    private String descriptionComplete;
+    private String description;
 
     private DonationCategory category;
     private int quantity;
