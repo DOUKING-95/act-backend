@@ -15,7 +15,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("auth/demande-dons")
+@RequestMapping("demande-dons")
 @AllArgsConstructor
 public class DonationRequestController {
 
