@@ -1,0 +1,162 @@
+package com.health_donate.health.controller;
+
+
+import com.health_donate.health.dto.*;
+import com.health_donate.health.entity.Actor;
+import com.health_donate.health.entity.RefreshToken;
+import com.health_donate.health.entity.User;
+import com.health_donate.health.repository.ActorRepository;
+import com.health_donate.health.repository.RoleRepository;
+import com.health_donate.health.repository.UserRepository;
+import com.health_donate.health.security.jwt.JwtService;
+import com.health_donate.health.service.*;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("auth")
+@AllArgsConstructor
+    public class AuthController {
+
+
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
+    private final ActorService actorService;
+    private final AuthService authService;
+    private final SocialActionService socialActionService;
+    private DonationService donationService;
+    private ImageService imageService;
+    private final AssociationService associationService;
+
+
+    // LOGIN
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginDTO request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getPhone(),
+                        request.getPassword()
+                )
+        );
+
+        Actor user = (Actor) userRepository.findByPhoneNumber(request.getPhone())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        String accessToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("200", "Connexion réussie", Map.of(
+                        "access_token", accessToken,
+                        "refresh_token", refreshToken.getToken()
+                ))
+        );
+    }
+
+    // LOGIN
+    @PostMapping("/loginAdmin")
+    public ResponseEntity<ApiResponse<?>> loginAdmin(@RequestBody LoginAdminDTO request) {
+
+//        Actor user = actorRepository.findByEmail(request.getUsername()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        String accessToken = authService.authenticateByEmail(request.getUsername(), request.getPassword());
+//        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("200", "Connexion réussie", Map.of(
+                        "access_token", accessToken
+//                        "refresh_token", refreshToken.getToken()
+                ))
+        );
+    }
+
+    // REFRESH
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<?>> refreshToken(@RequestBody Map<String, String> request) {
+        String requestToken = request.get("refresh_token");
+
+        RefreshToken refreshToken = refreshTokenService.getByToken(requestToken)
+                .orElseThrow(() -> new RuntimeException("Refresh token invalide"));
+
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        User user = refreshToken.getUser();
+        String accessToken = jwtService.generateToken(user);
+
+        return ResponseEntity.ok(new ApiResponse<>("200", "Access token renouvelé", Map.of(
+                "access_token", accessToken
+        )));
+    }
+
+    // LOGOUT
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<?>> logout(@RequestBody Map<String, String> request) {
+        String phone = request.get("phone");
+        User user = (User) userRepository.findByPhoneNumber(phone)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        refreshTokenService.deleteByUser(user);
+
+        return ResponseEntity.ok(new ApiResponse<>("200", "Déconnexion réussie", null));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterDTO request) {
+
+
+
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("200", "Creation réussie",
+                        this.actorService.createActor(request))
+        );
+    }
+
+    @GetMapping("/action-socials")
+    public Page<SocialActionDTO> getAllSocialActionsPaged(
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return socialActionService.getAllSocialActionsPaged(page);
+    }
+
+    @GetMapping("/all")
+    public Page<DonationDTO> getAllDonationsPaged(
+            @RequestParam(defaultValue = "0") int page) {
+        return donationService.getAllDonationsPaged(page);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ImageDTO>> getImageById(@PathVariable Long id) {
+        ImageDTO dto = imageService.getImageById(id);
+        if (dto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("404", "Image non trouvée", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>("200", "Image trouvée", dto));
+    }
+
+    @GetMapping("/asso/{id}")
+    public ResponseEntity<ApiResponse<?>> getById(@PathVariable Long id) {
+        AssociationDTO associationDTO = associationService.getAssociationById(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                new ApiResponse<>(
+                        String.valueOf(HttpStatus.ACCEPTED.value()),
+                        HttpStatus.ACCEPTED.getReasonPhrase(),
+                        associationDTO
+                )
+        );
+    }
+    }
+
