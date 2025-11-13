@@ -16,6 +16,7 @@ import com.health_donate.health.repository.AssociationRepository;
 import com.health_donate.health.repository.MembreRepository;
 import com.health_donate.health.repository.RoleRepository;
 import com.health_donate.health.repository.UserRepository;
+import com.health_donate.health.service.external.CloudinaryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class AssociationService {
     @Autowired
     private AssociationRepository associationRepository;
     @Autowired
-    private final FileStorageService fileStorageService;
+    private final CloudinaryService fileStorageService;
     @Autowired
     private final PasswordEncoder passwordEncoder;
     @Autowired

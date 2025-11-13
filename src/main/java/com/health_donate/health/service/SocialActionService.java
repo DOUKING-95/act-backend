@@ -10,6 +10,7 @@ import com.health_donate.health.mapper.SocialActionMapper;
 import com.health_donate.health.repository.AssociationRepository;
 import com.health_donate.health.repository.ImageRepository;
 import com.health_donate.health.repository.SocialActionRepository;
+import com.health_donate.health.service.external.CloudinaryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class SocialActionService {
     private SocialActionRepository socialActionRepository;
     private ImageRepository imageRepository;
     private AssociationRepository associationRepository;
-    private  FileStorageService fileStorageService;
+    private CloudinaryService fileStorageService;
 
     // CREATE
     public SocialActionDTO createSocialAction(SocialActionDTO dto, MultipartFile[] images) throws IOException {

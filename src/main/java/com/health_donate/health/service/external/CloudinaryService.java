@@ -22,7 +22,7 @@ public class CloudinaryService {
         this.folder = "health_donate"; // ou injecte via @Value("${cloudinary.folder}")
     }
 
-    public String upload(MultipartFile file) {
+    public String storeFile(MultipartFile file) {
         try {
             Map<?, ?> uploadResult = cloudinary.uploader()
                     .upload(file.getBytes(), ObjectUtils.asMap(
