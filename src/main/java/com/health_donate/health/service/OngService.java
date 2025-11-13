@@ -6,6 +6,7 @@ import com.health_donate.health.dto.OngDTO;
 import com.health_donate.health.entity.Ong;
 import com.health_donate.health.mapper.OngMapper;
 import com.health_donate.health.repository.OngRepository;
+import com.health_donate.health.service.external.CloudinaryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,9 @@ import java.util.stream.Collectors;
 public class OngService {
 
     private final OngRepository ongRepository;
-    private final FileStorageService fileStorageService;
+    private final CloudinaryService fileStorageService;
 
-    public OngService(OngRepository ongRepository, FileStorageService fileStorageService) {
+    public OngService(OngRepository ongRepository, CloudinaryService fileStorageService) {
         this.ongRepository = ongRepository;
         this.fileStorageService = fileStorageService;
     }

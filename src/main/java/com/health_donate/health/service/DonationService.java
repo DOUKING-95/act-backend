@@ -14,6 +14,7 @@ import com.health_donate.health.repository.ActorRepository;
 import com.health_donate.health.repository.DonationRepository;
 import com.health_donate.health.repository.ImageRepository;
 import com.health_donate.health.repository.UserRepository;
+import com.health_donate.health.service.external.CloudinaryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class DonationService {
 
 
 
-    private final FileStorageService fileStorageService;
+    private final CloudinaryService fileStorageService;
     private final ImageRepository imageRepository;
 
     // --- CREATE ---

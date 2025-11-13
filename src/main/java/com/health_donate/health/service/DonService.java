@@ -6,6 +6,7 @@ import com.health_donate.health.enumT.Destinataire;
 import com.health_donate.health.enumT.DonationStatus;
 import com.health_donate.health.mapper.DonMapper;
 import com.health_donate.health.repository.*;
+import com.health_donate.health.service.external.CloudinaryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class DonService {
     private final DonationRepository donationRepository;
     private final ActorRepository actorRepository;
     private final ImageRepository imageRepository;
-    private final FileStorageService fileStorageService;
+    private final CloudinaryService fileStorageService;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final ReceptionRepository receptionRepository;
