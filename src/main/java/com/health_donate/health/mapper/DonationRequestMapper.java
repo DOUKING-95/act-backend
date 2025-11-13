@@ -30,7 +30,6 @@ public class DonationRequestMapper {
         if (request.getRequester() != null) {
             dto.setRequesterId(request.getRequester().getId());
             dto.setName(request.getRequester().getName());
-            dto.setType(request.getRequester().getAuthorities().toString());
         }
 
         return dto;
