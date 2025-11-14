@@ -242,6 +242,21 @@ import java.util.Map;
 
 
 
+    //  UPDATE
+    @PutMapping("/demande-dons/{id}")
+    public ResponseEntity<ApiResponse<DonationRequestDTO>> updateDonationRequest(
+            @PathVariable Long id,
+            @RequestPart("accept") Boolean accept
+    ) {
+        DonationRequestDTO updated = donationRequestService.updateDonationRequest(id, accept);
+        if (updated == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("404", "Demande de don à mettre à jour non trouvée", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>("200", "Demande de don mise à jour avec succès", updated));
+    }
+
+
     @PostMapping("/demande-dons/")
     public ResponseEntity<ApiResponse<DonationRequestDTO>> createDonation(@RequestPart("demandeDon") DonationRequestDTO dto) {
         DonationRequestDTO saved = donationRequestService.createDemandeDon(dto);
