@@ -4,18 +4,12 @@ package com.health_donate.health.service;
 
 import com.health_donate.health.dto.AssociationDTO;
 import com.health_donate.health.dto.MembreDTO;
-import com.health_donate.health.entity.Association;
-import com.health_donate.health.entity.Membre;
-import com.health_donate.health.entity.Role;
-import com.health_donate.health.entity.User;
+import com.health_donate.health.entity.*;
 import com.health_donate.health.enumT.StatutAsso;
 import com.health_donate.health.enumT.UserRole;
 import com.health_donate.health.mapper.AssociationMapper;
 import com.health_donate.health.mapper.MembreMapper;
-import com.health_donate.health.repository.AssociationRepository;
-import com.health_donate.health.repository.MembreRepository;
-import com.health_donate.health.repository.RoleRepository;
-import com.health_donate.health.repository.UserRepository;
+import com.health_donate.health.repository.*;
 import com.health_donate.health.service.external.CloudinaryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -52,15 +46,17 @@ public class AssociationService {
     @Autowired
     private MembreRepository membreRepository;
 
+    private ActorRepository actorRepository;
+
     //Creation d'une association
     /**
      * Crée une nouvelle association et son représentant utilisateur.
      */
     public AssociationDTO createAssociation(AssociationDTO dto, MultipartFile logo, MultipartFile cover) throws IOException {
         //Vérification si le représentant existe
-        User representant = userRepository.findByEmailOrPhoneNumber(dto.getEmail(), dto.getPhone())
+        Actor representant = (Actor) actorRepository.findByEmailOrPhoneNumber(dto.getEmail(), dto.getPhone())
                 .orElseGet(() -> {
-                    User newUser = new User();
+                    Actor newUser = new Actor();
                     newUser.setEmail(dto.getEmail());
                     newUser.setName(dto.getNomComplet());
                     newUser.setPhoneNumber(dto.getPhone());
@@ -76,7 +72,7 @@ public class AssociationService {
         representant.setRole(roleAssociation);
 
         // Sauvegarde / mise à jour
-        userRepository.save(representant);
+        actorRepository.save(representant);
 
         //Création de l'association
         Association association = AssociationMapper.toEntity(dto);

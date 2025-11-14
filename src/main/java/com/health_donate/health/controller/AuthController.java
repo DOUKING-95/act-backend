@@ -54,7 +54,7 @@ import java.util.Map;
                 )
         );
 
-        Actor user = (Actor) userRepository.findByPhoneNumber(request.getPhone())
+        User user =  userRepository.findByPhoneNumber(request.getPhone())
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         String accessToken = jwtService.generateToken(user);

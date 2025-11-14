@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface ActorRepository  extends JpaRepository<Actor, Long> {
     Optional<Actor> findByEmail(String email);
     Optional<Actor> findByPhoneNumber(String phone);
+    Optional<User> findByEmailOrPhoneNumber(String email, String phoneNumber);
 }

@@ -23,7 +23,7 @@ public class RefreshTokenService {
     @Value("${security.jwt.refresh-token-expiration-ms}")
     private Long refreshTokenDurationMs;
 
-    public RefreshToken createRefreshToken(Actor user) {
+    public RefreshToken createRefreshToken(User user) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
                 .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
