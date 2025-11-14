@@ -2,11 +2,9 @@ package com.health_donate.health.controller;
 
 
 import com.health_donate.health.dto.*;
-import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.RefreshToken;
 import com.health_donate.health.entity.User;
-import com.health_donate.health.repository.ActorRepository;
-import com.health_donate.health.repository.RoleRepository;
+import com.health_donate.health.repository.DonationRequestRepository;
 import com.health_donate.health.repository.UserRepository;
 import com.health_donate.health.security.jwt.JwtService;
 import com.health_donate.health.service.*;
@@ -17,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +38,9 @@ import java.util.Map;
     private DonationService donationService;
     private ImageService imageService;
     private final AssociationService associationService;
+
+    private DonationRequestService donationRequestService;
+    private DonationRequestRepository donationRequestRepository;
 
 
     // LOGIN
@@ -236,6 +235,43 @@ import java.util.Map;
         );
     }
 
+
+
+    //  UPDATE
+    @PutMapping("/demande-dons/{id}")
+    public ResponseEntity<ApiResponse<DonationRequestDTO>> updateDonationRequest(
+            @PathVariable Long id,
+            @RequestPart("accept") Boolean accept
+    ) {
+        DonationRequestDTO updated = donationRequestService.updateDonationRequest(id, accept);
+        if (updated == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("404", "Demande de don à mettre à jour non trouvée", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>("200", "Demande de don mise à jour avec succès", updated));
+    }
+
+
+    @PostMapping("/demande-dons/")
+    public ResponseEntity<ApiResponse<DonationRequestDTO>> createDonation(@RequestPart("demandeDon") DonationRequestDTO dto) {
+        DonationRequestDTO saved = donationRequestService.createDemandeDon(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("201", "Demande de don créée avec succès", saved));
+    }
+
+    //  assigner un don a quelqu'un
+    @PutMapping("/demande-dons/{id}/{userID}")
+    public ResponseEntity<ApiResponse<DonationRequestDTO>> assignerDon(
+            @PathVariable Long id,
+            @PathVariable Long userID
+    ) {
+        DonationRequestDTO updated = donationRequestService.assignerDon(id, userID);
+        if (updated == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("404", "Don non trouvé/assigne", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>("200", "Don assigner avec succès", updated));
+    }
 
 }
 
