@@ -4,6 +4,7 @@ import com.health_donate.health.entity.Donation;
 import com.health_donate.health.enumT.DonationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,9 +30,10 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     @Query("SELECT d.donor.id AS donorId, COUNT(d) AS totalDonations " +
             "FROM Donation d " +
+            "WHERE d.isAvailable = :status " +
             "GROUP BY d.donor.id " +
             "ORDER BY COUNT(d) DESC")
-    List<Object[]> findTop15Donors();
+    List<Object[]> findTop15Donors(@Param("status") DonationStatus status);
 
 
 

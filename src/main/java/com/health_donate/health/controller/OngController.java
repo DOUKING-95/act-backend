@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("auth/ong/")
+@RequestMapping("ong")
 @RequiredArgsConstructor
 public class OngController {
 

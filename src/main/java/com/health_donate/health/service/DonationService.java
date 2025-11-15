@@ -153,7 +153,7 @@ public class DonationService {
 
 
     public List<TopDonorDTO> getTop15Donors() {
-        List<Object[]> results = donationRepository.findTop15Donors();
+        List<Object[]> results = donationRepository.findTop15Donors(DonationStatus.PUBLIE);
         return results.stream()
                 .map(obj -> new TopDonorDTO(
                         ((Number) obj[0]).longValue(),

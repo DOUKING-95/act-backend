@@ -22,6 +22,7 @@ public class SocialActionDTO {
     private String lieu;
     private LocalDateTime dateDebut;
     private LocalDateTime dateFin;
+
     String heureDebut;
     String heureFin;
     String infosSupplementaires;
@@ -29,7 +30,7 @@ public class SocialActionDTO {
 
     private List<Long> imageIds;
     private boolean passed;
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
     private String type;
     private int benevolNumber;
     private List<Long> participationIds;
