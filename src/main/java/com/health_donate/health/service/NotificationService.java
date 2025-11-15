@@ -82,13 +82,14 @@ public class NotificationService {
                     break;
                 }
                 ongList.forEach(ong -> {
-                    messagingTemplate.convertAndSend("/topic/notifications", notifData);
+
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
                     reception.setOng(ong);
                     receptionRepository.save(reception);
                 });
+                messagingTemplate.convertAndSend("/topic/notifications", notifData);
             }
 
             case "benevoles" -> {
@@ -99,7 +100,7 @@ public class NotificationService {
                 }
                 membres.forEach(membre -> {
                     if (users.contains(membre.getUser())) {
-                        messagingTemplate.convertAndSend("/topic/notifications", notifData);
+
                         Reception reception = new Reception();
                         reception.setNotification(notif);
                         reception.setEstLu(false);
@@ -107,6 +108,7 @@ public class NotificationService {
                         receptionRepository.save(reception);
                     }
                 });
+                messagingTemplate.convertAndSend("/topic/notifications", notifData);
             }
 
             case "associations" -> {
@@ -117,7 +119,6 @@ public class NotificationService {
                 }
                 membreList.forEach(membre -> {
                     if (associations.contains(membre.getAssociation())) {
-                        messagingTemplate.convertAndSend("/topic/notifications", notifData);
                         Reception reception = new Reception();
                         reception.setNotification(notif);
                         reception.setEstLu(false);
@@ -125,6 +126,8 @@ public class NotificationService {
                         receptionRepository.save(reception);
                     }
                 });
+                messagingTemplate.convertAndSend("/topic/notifications", notifData);
+
             }
 
             case "tous" -> {
@@ -145,7 +148,6 @@ public class NotificationService {
 //                });
 
                 allMembres.forEach(membre -> {
-                    messagingTemplate.convertAndSend("/topic/notifications", notifData);
                     Reception reception = new Reception();
                     reception.setNotification(notif);
                     reception.setEstLu(false);
@@ -153,6 +155,8 @@ public class NotificationService {
                     reception.setUser(membre);
                     receptionRepository.save(reception);
                 });
+                messagingTemplate.convertAndSend("/topic/notifications", notifData);
+
             }
 
             default -> throw new IllegalArgumentException("Type de destinataire inconnu : " + dto.getDestinataires());
