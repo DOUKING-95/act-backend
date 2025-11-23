@@ -142,6 +142,10 @@ public class DonationRequestService {
         return DonationRequestMapper.toDTO(assigneDon);
     }
 
+    public boolean hasAsked(Long requesterId, Long donationId) {
+        return donationRequestRepository.existsByRequesterIdAndDonationId(requesterId, donationId);
+    }
+
 
 }
 

@@ -197,5 +197,17 @@ public class ParticipationService {
         Instant now = Instant.now();
         activeCodes.entrySet().removeIf(entry -> now.isAfter(entry.getValue().expiration));
     }
+
+
+
+    // Vérifier si un user a déjà participé
+    public boolean hasParticipated(Long actorId, Long activiteId) {
+        return participationRepository.existsByActorIdAndActiviteId(actorId, activiteId);
+    }
+
+    // Compter les participations validées d'une activité
+    public long countParticipations(Long activiteId) {
+        return participationRepository.countByActiviteIdAndStatus(activiteId, true);
+    }
 }
 

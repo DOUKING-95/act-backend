@@ -130,4 +130,15 @@ public class DonationRequestController {
         }
         return ResponseEntity.ok(new ApiResponse<>("200", "Don assigner avec succès", updated));
     }
+
+    @GetMapping("/has-asked")
+    public ResponseEntity<?> hasAsked(
+            @RequestParam Long requesterId,
+            @RequestParam Long donationId
+    ) {
+        boolean asked = donationRequestService.hasAsked(requesterId, donationId);
+
+        return ResponseEntity.ok(asked);
+
+    }
 }

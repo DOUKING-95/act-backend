@@ -116,5 +116,22 @@ public class ParticipationController {
     public ResponseEntity<List<TopParticipantDTO>> getTopParticipants() {
         return ResponseEntity.ok(participationService.getTop15Participants());
     }
+
+
+    // Vérifier si l'acteur a déjà participé
+    @GetMapping("/has-participated")
+    public ResponseEntity<Boolean> hasParticipated(
+            @RequestParam Long actorId,
+            @RequestParam Long activiteId) {
+        return ResponseEntity.ok(participationService.hasParticipated(actorId, activiteId));
+    }
+
+    // Compter les participations pour une activité
+    @GetMapping("/count")
+    public ResponseEntity<Long> count(
+            @RequestParam Long activiteId) {
+        return ResponseEntity.ok(participationService.countParticipations(activiteId));
+    }
+
 }
 

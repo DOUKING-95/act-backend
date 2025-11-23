@@ -16,9 +16,16 @@ public interface ParticipationRepository  extends JpaRepository<Participation, L
 
     @Query("SELECT p.actor.id AS actorId, COUNT(p) AS totalParticipations " +
             "FROM Participation p " +
+            "WHERE p.status = true " +
             "GROUP BY p.actor.id " +
             "ORDER BY COUNT(p) DESC")
     List<Object[]> findTopActorsByParticipation();
+
+    long countByActiviteIdAndStatus(Long activiteId, boolean status);
+
+    boolean existsByActorIdAndActiviteId(Long actorId, Long activiteId);
+
+
 
 
 }

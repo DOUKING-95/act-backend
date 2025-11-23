@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface DonationRequestRepository extends JpaRepository<DonationRequest, Long> {
 
+    boolean existsByRequesterIdAndDonationId(Long requesterId, Long donationId);
+
     List<DonationRequest> findByDonationId(Long donationId);
     long countByRequester_IdAndStatus(Long requesterId, RequestStatus status);
     List<DonationRequest> findByRequester_IdAndStatus(Long requesterId, RequestStatus status);
