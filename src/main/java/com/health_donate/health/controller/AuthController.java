@@ -1,7 +1,9 @@
 package com.health_donate.health.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.health_donate.health.dto.*;
+import com.health_donate.health.entity.Actor;
 import com.health_donate.health.entity.RefreshToken;
 import com.health_donate.health.entity.User;
 import com.health_donate.health.repository.DonationRequestRepository;
@@ -41,6 +43,9 @@ import java.util.Map;
 
     private DonationRequestService donationRequestService;
     private DonationRequestRepository donationRequestRepository;
+    private final OngService ongService;
+    private final ObjectMapper objectMapper;
+
 
 
     // LOGIN
@@ -57,7 +62,7 @@ import java.util.Map;
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         String accessToken = jwtService.generateToken(user);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken((Actor) user);
 
         return ResponseEntity.ok(
                 new ApiResponse<>("200", "Connexion réussie", Map.of(
@@ -273,6 +278,49 @@ import java.util.Map;
                     .body(new ApiResponse<>("404", "Don non trouvé/assigne", null));
         }
         return ResponseEntity.ok(new ApiResponse<>("200", "Don assigner avec succès", updated));
+    }
+
+    //Pour la gestion des Ongs:
+
+    @GetMapping("/ong/")
+    public ResponseEntity<List<OngDTO>> getAll() {
+        return ResponseEntity.ok(ongService.getAllOngs());
+    }
+
+    @GetMapping("/ong/{id}")
+    public ResponseEntity<OngDTO> getOngById(@PathVariable Long id) {
+        OngDTO dto = ongService.getById(id);
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+    }
+
+
+    @PostMapping("/ong")
+    public ResponseEntity<OngDTO> create(
+            @RequestPart("contenu") String dto,
+            @RequestPart(value = "profil", required = false) MultipartFile profilFile,
+            @RequestPart(value = "cover", required = false) MultipartFile coverFile
+    ) throws IOException {
+
+        OngDTO ongDTO = objectMapper.readValue(dto, OngDTO.class);
+        return ResponseEntity.ok(ongService.createOng(ongDTO, profilFile, coverFile));
+    }
+
+
+    @PutMapping("/ong/{id}")
+    public ResponseEntity<OngDTO> update(
+            @PathVariable Long id,
+            @RequestPart("contenu") OngDTO dto,
+            @RequestPart(value = "profil", required = false) MultipartFile profilFile,
+            @RequestPart(value = "cover", required = false) MultipartFile coverFile
+    ) throws IOException {
+        return ResponseEntity.ok(ongService.updateOng(id, dto, profilFile,coverFile));
+    }
+
+    @DeleteMapping("/ong/{id}")
+    public ResponseEntity<Void> deleteOng(@PathVariable Long id) {
+        return ongService.deleteOng(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 
 }
