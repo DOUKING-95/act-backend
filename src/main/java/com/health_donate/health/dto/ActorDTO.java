@@ -18,6 +18,8 @@ public class ActorDTO {
     private boolean verified;
     private String address;
     private LocalDateTime createdAt;
+    private double longitude;
+    private double latitude;
     private Long roleId;
     private List<Long> donationIds;
     private List<Long> donationRequestIds;

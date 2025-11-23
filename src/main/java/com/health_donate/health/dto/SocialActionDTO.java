@@ -22,12 +22,12 @@ public class SocialActionDTO {
     private String lieu;
     private LocalDateTime dateDebut;
     private LocalDateTime dateFin;
-
     String heureDebut;
     String heureFin;
     String infosSupplementaires;
     private String description;
-
+    private double longitude;
+    private double latitude;
     private List<Long> imageIds;
     private boolean passed;
     private LocalDate date = LocalDate.now();

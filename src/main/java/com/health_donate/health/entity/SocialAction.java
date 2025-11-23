@@ -39,6 +39,9 @@ public class SocialAction {
     private LocalDate date;
     private String type;
 
+    private double longitude;
+    private double latitude;
+
     @OneToMany(mappedBy = "socialAction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
     public void updateImages(List<Image> newImages) {

@@ -22,6 +22,7 @@ public class SocialActionMapper {
         dto.setBenevolNumber(action.getBenevolNumber());
         dto.setDateDebut(action.getDateDebut());
         dto.setDateFin(action.getDateFin());
+        dto.setType(action.getType());
         dto.setHeureDebut(action.getHeureDebut() != null ? action.getHeureDebut() : "");
         dto.setHeureFin(action.getHeureFin() != null ? action.getHeureFin() : "");
         dto.setInfosSupplementaires(action.getInfosSupplementaires() != null ? action.getInfosSupplementaires() :"");
@@ -61,9 +62,12 @@ public class SocialActionMapper {
         action.setDateDebut(dto.getDateDebut());
         action.setDateFin(dto.getDateFin());
         action.setHeureDebut(dto.getHeureDebut());
+        action.setType(dto.getType());
+        action.setDate(dto.getDate());
         action.setHeureFin(dto.getHeureFin());
         action.setInfosSupplementaires(dto.getInfosSupplementaires() != null ? dto.getInfosSupplementaires() : "");
-
+action.setLongitude(dto.getLongitude());
+action.setLatitude(dto.getLatitude());
 
         // Les listes d’IDs ne sont pas converties en entités ici pour éviter de charger la DB
         // Cela peut être fait dans le service si nécessaire

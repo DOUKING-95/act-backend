@@ -70,6 +70,8 @@ public class ActorMapper {
         actor.setVerified(dto.isVerified());
         actor.setFirstname(dto.getFirstname());
         actor.setAddress(dto.getAddress());
+        actor.setLongitude(dto.getLongitude());
+        actor.setLatitude(dto.getLatitude());
 
         if (dto.getRoleId() != null) {
             Role role = new Role();

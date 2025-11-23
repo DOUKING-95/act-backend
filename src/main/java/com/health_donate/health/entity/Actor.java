@@ -18,6 +18,8 @@ import java.util.List;
 public class Actor  extends  User{
 
     private String firstname;
+    private double longitude;
+    private double latitude;
 
     @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Donation> donations;
