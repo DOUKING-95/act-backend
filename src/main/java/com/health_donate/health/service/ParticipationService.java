@@ -207,7 +207,7 @@ public class ParticipationService {
 
     // Compter les participations validées d'une activité
     public long countParticipations(Long activiteId) {
-        return participationRepository.countByActiviteIdAndStatus(activiteId, true);
+        return participationRepository.countByActiviteIdAndStatus(activiteId, false);
     }
 }
 
