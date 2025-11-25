@@ -141,7 +141,7 @@ import java.util.Map;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterDTO request) {
+    public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterDTO request) throws IOException {
 
 
 

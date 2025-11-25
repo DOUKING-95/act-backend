@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ public class ActorService {
 
 
     // --- CREATE ---
-    public ActorDTO createActor(RegisterDTO dto)  {
+    public ActorDTO createActor(RegisterDTO dto) throws IOException {
 
         Role role =  this.roleRepository.findById(1L).orElseThrow(()-> new EntityNotFoundException("Pas de role pour id :) 1"));
         log.info ("Recherche utilisateur avec phone: " + dto.phone());

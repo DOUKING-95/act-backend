@@ -18,5 +18,16 @@ public class EmailTemplateService {
 
         return html;
     }
+
+    public String loadTemplate(String name, String code) throws IOException {
+        ClassPathResource resource = new ClassPathResource("templates/activation_email.html");
+        String html = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+        html = html.replace("{{NAME}}", name);
+        html = html.replace("{{CODE}}", code);
+
+        return html;
+    }
+
 }
 

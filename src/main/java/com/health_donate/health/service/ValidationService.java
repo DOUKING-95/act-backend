@@ -9,10 +9,12 @@ import com.health_donate.health.repository.ValidationRepo;
 import com.health_donate.health.service.external.EmailSender;
 
 
+import com.health_donate.health.service.external.EmailTemplateService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 
 import java.util.Map;
@@ -29,7 +31,18 @@ private UserRepository userRepository;
     private EmailSender mailSender;
 
 
-    public  void saveValidation(User user){
+
+    private EmailTemplateService templateService;
+
+
+    public  void saveValidation(User user) throws IOException {
+
+
+
+
+
+
+
         Validation validation = new Validation();
 
         validation.setUser(user);
@@ -42,9 +55,12 @@ String code = generateCode();
         validation.setCode(code);
 
         this.validationRepo.save(validation);
-        String subject = "Code d'activation de Act !";
-        String message = String.format("Votre code d'activation est %s , Mr %s", code,user.getEmail());
-        this.mailSender.sendSimpleEmail(user.getEmail(), subject, message);
+        String html = templateService.loadTemplate(user.getEmail(), code);
+        mailSender.sendHtmlEmail(user.getEmail(), "Votre code d'activation Act", html);
+
+       // String subject = "Code d'activation de Act !";
+       // String message = String.format("Votre code d'activation est %s , Mr %s", code,user.getEmail());
+       // this.mailSender.sendSimpleEmail(user.getEmail(), subject, message);
 
     }
 
