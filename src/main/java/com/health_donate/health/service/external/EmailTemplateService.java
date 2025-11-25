@@ -20,7 +20,7 @@ public class EmailTemplateService {
     }
 
     public String loadTemplate(String name, String code) throws IOException {
-        ClassPathResource resource = new ClassPathResource("templates/activation_email.html");
+        ClassPathResource resource = new ClassPathResource("templates/code_activation.html");
         String html = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
         html = html.replace("{{NAME}}", name);
