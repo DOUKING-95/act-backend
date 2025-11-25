@@ -17,7 +17,7 @@ public class DonationMapper {
         dto.setDescription(donation.getDescription());
         dto.setCategory(donation.getCategory());
         dto.setQuantity(donation.getQuantity());
-
+        dto.setState(donation.getEtat());
         dto.setIsAvailable(donation.getIsAvailable());
         dto.setLocation(donation.getLocation());
         dto.setUrgent(donation.isUrgent());
@@ -64,7 +64,7 @@ public class DonationMapper {
         donation.setDescription(dto.getDescription());
         donation.setCategory(dto.getCategory());
         donation.setQuantity(dto.getQuantity());
-
+        donation.setEtat(dto.getState());
         donation.setIsAvailable(dto.getIsAvailable());
         donation.setLocation(dto.getLocation());
         donation.setUrgent(dto.isUrgent());

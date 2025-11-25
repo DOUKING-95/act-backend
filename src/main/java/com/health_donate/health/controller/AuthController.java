@@ -10,6 +10,8 @@ import com.health_donate.health.repository.DonationRequestRepository;
 import com.health_donate.health.repository.UserRepository;
 import com.health_donate.health.security.jwt.JwtService;
 import com.health_donate.health.service.*;
+import com.health_donate.health.service.external.EmailSender;
+import com.health_donate.health.service.external.EmailTemplateService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -45,8 +47,27 @@ import java.util.Map;
     private DonationRequestRepository donationRequestRepository;
     private final OngService ongService;
     private final ObjectMapper objectMapper;
+    private EmailSender emailService;
+    private EmailTemplateService templateService;
 
 
+
+
+    @PostMapping("/send-partnership")
+    public ResponseEntity<String> sendPartnershipEmail(@RequestParam String to,
+                                                       @RequestParam String name) {
+        try {
+            String html = templateService.loadTemplate(name);
+
+            emailService.sendHtmlEmail(to,
+                    "Partenariat stratégique avec HealthDonate",
+                    html);
+
+            return ResponseEntity.ok("Email envoyé !");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur : " + e.getMessage());
+        }
+    }
 
     // LOGIN
     @PostMapping("/login")

@@ -95,13 +95,13 @@ public class ParticipationService {
     }
 
 
-    // ⏱ Durée de validité du code (en secondes)
-    private final long CODE_VALIDITY_SECONDS = 600; // 10 minutes
+    //  Durée de validité du code (en secondes)
+    private final long CODE_VALIDITY_SECONDS = 1800; // 30 minutes
 
     // Stockage temporaire : code -> {activiteId, expiration}
     private final Map<String, CodeInfo> activeCodes = new HashMap<>();
 
-    // Classe interne pour stocker l’ID de l’activité et expiration
+
     private static class CodeInfo {
         Long activiteId;
         Instant expiration;
@@ -133,6 +133,12 @@ public class ParticipationService {
      * Vérifie et enregistre la présence d’un membre via le code QR
      */
     public ParticipationDTO enregistrerPresence(Long actorId, String code) {
+
+
+        if (code.startsWith("PRESENCE:")) {
+            code = code.substring("PRESENCE:".length());
+        }
+
         CodeInfo codeInfo = activeCodes.get(code);
 
         if (codeInfo == null || Instant.now().isAfter(codeInfo.expiration)) {

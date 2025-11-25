@@ -28,6 +28,7 @@ public class DonationDTO {
     private String location;
     private boolean urgent;
     private boolean published;
+    private String state;
     private LocalDateTime dateCreated;
 
 
