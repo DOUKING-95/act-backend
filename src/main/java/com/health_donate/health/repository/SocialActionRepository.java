@@ -9,11 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface SocialActionRepository extends JpaRepository<SocialAction, Long> {
     Page<SocialAction> findAll(Pageable pageable);
+
+    Optional<SocialAction> findByQrCode(String qrCode);
     Page<SocialAction> findByAssociationId(Long associationId, Pageable pageable);
 
     // Nombre d'actions par mois

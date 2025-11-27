@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,6 +42,17 @@ public class SocialAction {
 
     private double longitude;
     private double latitude;
+
+    @Column(name = "qr_code", unique = true)
+    private String qrCode;
+
+    @Column(name = "qr_code_expiration")
+    private Instant qrCodeExpiration;
+
+
+    @Column(name = "qr_code_single_use")
+    private Boolean qrCodeSingleUse = Boolean.FALSE;
+
 
     @OneToMany(mappedBy = "socialAction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();

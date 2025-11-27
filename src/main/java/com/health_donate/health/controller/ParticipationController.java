@@ -7,6 +7,7 @@ import com.health_donate.health.dto.ParticipationDTO;
 import com.health_donate.health.dto.TopParticipantDTO;
 import com.health_donate.health.repository.ParticipationRepository;
 import com.health_donate.health.service.ParticipationService;
+import com.health_donate.health.service.SocialActionService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("participations")
@@ -25,6 +28,7 @@ public class ParticipationController {
 
     private final ParticipationService participationService;
     private final ParticipationRepository participationRepository;
+
 
 
 
@@ -93,24 +97,7 @@ public class ParticipationController {
     }
 
 
-    //  Générer un QR code pour une activité
-    @GetMapping("/generate/{activityId}")
-    public ResponseEntity<byte[]> generateQRCode(@PathVariable Long activityId) throws WriterException, IOException {
-        byte[] qrImage = participationService.generateQRCode(activityId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        return ResponseEntity.ok().headers(headers).body(qrImage);
-    }
 
-    //  Scanner / enregistrer la présence d'un membre
-    @PostMapping("/scan")
-    public ResponseEntity<ParticipationDTO> scanQRCode(
-            @RequestParam Long actorId,
-            @RequestParam String code
-    ) {
-        ParticipationDTO dto = participationService.enregistrerPresence(actorId, code);
-        return ResponseEntity.ok(dto);
-    }
 
     @GetMapping("/top-participants")
     public ResponseEntity<List<TopParticipantDTO>> getTopParticipants() {
@@ -131,6 +118,47 @@ public class ParticipationController {
     public ResponseEntity<Long> count(
             @RequestParam Long activiteId) {
         return ResponseEntity.ok(participationService.countParticipations(activiteId));
+    }
+
+
+
+
+    // GET PNG image (application/octet-stream) — requires auth/admin ideally
+    @GetMapping(value = "/generate/{activiteId}", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> generateQRCode(@PathVariable Long activiteId,
+                                                 @RequestParam(defaultValue = "false") boolean singleUse) {
+        try {
+            byte[] png = participationService.generateQRCodeForActivity(activiteId, singleUse);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(png);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // Regenerate (admin)
+    @PostMapping("/regenerate/{activiteId}")
+    public ResponseEntity<?> regenerate(@PathVariable Long activiteId,
+                                        @RequestParam(defaultValue = "false") boolean singleUse) {
+        try {
+            byte[] png = participationService.regenerateQRCode(activiteId, singleUse);
+            String base64 = Base64.getEncoder().encodeToString(png);
+            return ResponseEntity.ok(Map.of("qrBase64", base64));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // Validate scan (this is the endpoint Flutter calls)
+    @PostMapping("/validate")
+    public ResponseEntity<?> validate(@RequestParam String code, @RequestParam Long actorId) {
+        try {
+            ParticipationDTO dto = participationService.validatePresence(actorId, code);
+            return ResponseEntity.ok(Map.of("success", true, "data", dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "message", "Erreur serveur"));
+        }
     }
 
 }

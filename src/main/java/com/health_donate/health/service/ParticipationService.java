@@ -18,12 +18,14 @@ import com.health_donate.health.repository.ParticipationRepository;
 import com.health_donate.health.repository.SocialActionRepository;
 import com.health_donate.health.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.*;
 
@@ -95,95 +97,6 @@ public class ParticipationService {
     }
 
 
-    //  Durée de validité du code (en secondes)
-    private final long CODE_VALIDITY_SECONDS = 1800; // 30 minutes
-
-    // Stockage temporaire : code -> {activiteId, expiration}
-    private final Map<String, CodeInfo> activeCodes = new HashMap<>();
-
-
-    private static class CodeInfo {
-        Long activiteId;
-        Instant expiration;
-
-        CodeInfo(Long activiteId, Instant expiration) {
-            this.activiteId = activiteId;
-            this.expiration = expiration;
-        }
-    }
-
-    /**
-     * Génère un QR code aléatoire pour une activité
-     */
-    public byte[] generateQRCode(Long activiteId) throws WriterException, IOException, IOException {
-        String code = generateRandomCode(8);
-        Instant expiration = Instant.now().plusSeconds(CODE_VALIDITY_SECONDS);
-        activeCodes.put(code, new CodeInfo(activiteId, expiration));
-
-        String qrContent = "PRESENCE:" + code; // Le code aléatoire
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 300, 300);
-
-        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-        return pngOutputStream.toByteArray();
-    }
-
-    /**
-     * Vérifie et enregistre la présence d’un membre via le code QR
-     */
-    public ParticipationDTO enregistrerPresence(Long actorId, String code) {
-
-
-        if (code.startsWith("PRESENCE:")) {
-            code = code.substring("PRESENCE:".length());
-        }
-
-        CodeInfo codeInfo = activeCodes.get(code);
-
-        if (codeInfo == null || Instant.now().isAfter(codeInfo.expiration)) {
-            throw new RuntimeException("Code invalide ou expiré.");
-        }
-
-        Long activiteId = codeInfo.activiteId;
-
-        Actor actor = actorRepository.findById(actorId)
-                .orElseThrow(() -> new RuntimeException("Acteur introuvable."));
-        SocialAction activite = socialActionRepository.findById(activiteId)
-                .orElseThrow(() -> new RuntimeException("Activité introuvable."));
-
-        // Vérifie si le membre a déjà validé
-        Optional<Participation> existing = participationRepository.findByActorIdAndActiviteId(actorId, activiteId);
-        if (existing.isPresent()) {
-            throw new RuntimeException("L'utilisateur a déjà été enregistré comme présent.");
-        }
-
-        Participation participation = new Participation();
-        participation.setActor(actor);
-        participation.setActivite(activite);
-        participation.setStatus(true);
-
-        Participation saved = participationRepository.save(participation);
-
-        // ⚠️ Optionnel : supprimer le code après utilisation pour plus de sécurité
-        activeCodes.remove(code);
-
-        return new ParticipationDTO(saved.getId(), actorId, activiteId, true);
-    }
-
-    /**
-     * Génère un code aléatoire
-     */
-    private String generateRandomCode(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(length);
-        for(int i=0; i<length; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
-
     public List<TopParticipantDTO> getTop15Participants() {
         List<Object[]> results = participationRepository.findTopActorsByParticipation();
 
@@ -195,17 +108,6 @@ public class ParticipationService {
                 .toList();
     }
 
-    /**
-     * Nettoyage automatique des codes expirés toutes les minutes
-     */
-    @Scheduled(fixedRate = 60000)
-    private void cleanupExpiredCodes() {
-        Instant now = Instant.now();
-        activeCodes.entrySet().removeIf(entry -> now.isAfter(entry.getValue().expiration));
-    }
-
-
-
     // Vérifier si un user a déjà participé
     public boolean hasParticipated(Long actorId, Long activiteId) {
         return participationRepository.existsByActorIdAndActiviteId(actorId, activiteId);
@@ -214,6 +116,87 @@ public class ParticipationService {
     // Compter les participations validées d'une activité
     public long countParticipations(Long activiteId) {
         return participationRepository.countByActiviteIdAndStatus(activiteId, false);
+    }
+
+
+    private final long CODE_VALIDITY_SECONDS = 300; // 5 minutes, configurable
+
+    // Générer et associer un QR code à l'activité (retourne PNG bytes)
+    public byte[] generateQRCodeForActivity(Long activiteId, boolean singleUse) throws WriterException, IOException {
+        SocialAction action = socialActionRepository.findById(activiteId)
+                .orElseThrow(() -> new RuntimeException("Activité introuvable."));
+
+        String code = generateRandomCode(8);
+        Instant expiration = Instant.now().plusSeconds(CODE_VALIDITY_SECONDS);
+
+        action.setQrCode(code);
+        action.setQrCodeExpiration(expiration);
+        action.setQrCodeSingleUse(singleUse);
+        socialActionRepository.save(action);
+
+        String qrContent = "PRESENCE:" + code;
+        QRCodeWriter writer = new QRCodeWriter();
+        BitMatrix bitMatrix = writer.encode(qrContent, BarcodeFormat.QR_CODE, 400, 400);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out);
+        return out.toByteArray();
+    }
+
+    // Option to regenerate (invalidate previous code)
+    public byte[] regenerateQRCode(Long activiteId, boolean singleUse) throws WriterException, IOException {
+        // simply call generate after clearing code (overwrites previous)
+        return generateQRCodeForActivity(activiteId, singleUse);
+    }
+
+    // Validate scan: actorId from client, code scanned (with or without "PRESENCE:" prefix)
+    @Transactional
+    public ParticipationDTO validatePresence(Long actorId, String rawCode) {
+        if (rawCode == null || rawCode.isBlank()) {
+            throw new IllegalArgumentException("Code manquant.");
+        }
+
+        String code = rawCode.startsWith("PRESENCE:") ? rawCode.substring("PRESENCE:".length()) : rawCode;
+
+        SocialAction action = socialActionRepository.findByQrCode(code)
+                .orElseThrow(() -> new RuntimeException("Code invalide."));
+
+        if (action.getQrCodeExpiration() == null || Instant.now().isAfter(action.getQrCodeExpiration())) {
+            throw new RuntimeException("QR code expiré.");
+        }
+
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new RuntimeException("Acteur introuvable."));
+
+        // Check duplicate participation
+        Optional<Participation> existing = participationRepository.findByActorIdAndActiviteId(actorId, action.getId());
+        if (existing.isPresent()) {
+            throw new RuntimeException("L'utilisateur a déjà été enregistré comme présent.");
+        }
+
+        // create participation
+        Participation p = new Participation();
+        p.setActor(actor);
+        p.setActivite(action);
+        p.setStatus(true);
+        Participation saved = participationRepository.save(p);
+
+        // Optionally invalidate QR if single-use
+        if (Boolean.TRUE.equals(action.getQrCodeSingleUse())) {
+            action.setQrCode(null);
+            action.setQrCodeExpiration(null);
+            socialActionRepository.save(action);
+        }
+
+        return new ParticipationDTO(saved.getId(), actorId, action.getId(), true);
+    }
+
+    private String generateRandomCode(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        SecureRandom rnd = new SecureRandom();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        return sb.toString();
     }
 }
 
