@@ -168,20 +168,23 @@ public class ParticipationService {
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new RuntimeException("Acteur introuvable."));
 
-        // Check duplicate participation
-        Optional<Participation> existing = participationRepository.findByActorIdAndActiviteId(actorId, action.getId());
-        if (existing.isPresent()) {
+        // Vérifie si la participation existe
+        Participation participation = participationRepository
+                .findByActorIdAndActiviteId(actorId, action.getId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Vous devez être bénévole pour cette activité avant de scanner le QR code."
+                ));
+
+        // Vérifie si la présence est déjà validée
+        if (participation.getStatus()) {
             throw new RuntimeException("L'utilisateur a déjà été enregistré comme présent.");
         }
 
-        // create participation
-        Participation p = new Participation();
-        p.setActor(actor);
-        p.setActivite(action);
-        p.setStatus(true);
-        Participation saved = participationRepository.save(p);
+        // Met à jour le status à true après le scan
+        participation.setStatus(true);
+        Participation saved = participationRepository.save(participation);
 
-        // Optionally invalidate QR if single-use
+        // Optionnel : invalider le QR code si single-use
         if (Boolean.TRUE.equals(action.getQrCodeSingleUse())) {
             action.setQrCode(null);
             action.setQrCodeExpiration(null);
@@ -190,6 +193,7 @@ public class ParticipationService {
 
         return new ParticipationDTO(saved.getId(), actorId, action.getId(), true);
     }
+
 
     private String generateRandomCode(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

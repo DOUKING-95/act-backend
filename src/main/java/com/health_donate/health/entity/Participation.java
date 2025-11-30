@@ -27,4 +27,8 @@ public class Participation {
     @ManyToOne
     @JoinColumn(name = "activite_id")
     private SocialAction activite;
+
+    public boolean getStatus() {
+        return  status;
+    }
 }
